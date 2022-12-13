@@ -1,6 +1,7 @@
 import { FormEventHandler, useState } from "react";
 import { useRouter } from "next/router";
 
+import Input from "../Input/Input";
 import styles from "./Header.module.scss";
 
 const Header = () => {
@@ -33,14 +34,7 @@ const Header = () => {
       </div>
 
       <div className={styles.headerFlexContainer}>
-        <form onSubmit={handleSubmit} className={styles.headerInput}>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search LL2 here"
-          />
-          <button type="submit">search</button>
-        </form>
+        <Input handleSubmit={handleSubmit} query={query} setQuery={setQuery} />
         <img
           className={styles.headerProfile}
           src="/profile.svg"

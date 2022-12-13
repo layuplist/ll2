@@ -1,0 +1,30 @@
+.headerContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    padding: 15px 24px;
+    background-color: #f8f8f8;
+    border: 1px solid #e7e7e7;
+    border-radius: 4px;
+
+    .headerFlexContainer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 30px;
+
+        .headerLogo {
+            width: 25px;
+            height: 25px;
+        }
+
+        .headerLink {
+            color: #777;
+        }
+
+        .feather-user {
+            fill: #555;
+        }
+    }
+}
