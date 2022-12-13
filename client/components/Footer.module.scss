@@ -1,0 +1,19 @@
+.footerContainer {
+    padding: 15px 24px;
+    background-color: #f8f8f8;
+    border: 1px solid #e7e7e7;
+    border-radius: 4px;
+
+    .supportLinkContainer {
+        display: flex;
+        flex-direction: row;
+        margin: 0px auto;
+
+        .supportLink {
+            color: #337ab7;
+            text-align: center;
+            text-decoration: underline;
+            margin: 0px auto;
+        }
+    }
+}
