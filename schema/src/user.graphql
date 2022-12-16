@@ -1,0 +1,6 @@
+# * TYPES
+
+type User implements Identifiable {
+  id: ID!
+  comments: [Comment]
+}

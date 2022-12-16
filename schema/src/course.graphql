@@ -1,0 +1,16 @@
+# * TYPES
+
+type Course implements Identifiable {
+  id: ID!
+  departmentIds: [ID]!
+  number: Int!
+  subnumber: Int!
+  name: String!
+  description: String!
+  xlist: CourseGroup
+  offerings: [Offering]
+}
+
+type CourseGroup {
+  courseIds: [ID]!
+}

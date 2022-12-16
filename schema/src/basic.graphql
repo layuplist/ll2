@@ -1,0 +1,21 @@
+# * SCALARS
+
+scalar AWSDate
+
+# * TYPES
+
+interface Identifiable {
+  id: ID!
+}
+
+# * QUERIES
+
+type Query {
+  _: Boolean # stub
+}
+
+# * MUTATIONS
+
+type Mutation {
+  _: Boolean # stub
+}

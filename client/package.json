@@ -1,5 +1,5 @@
 {
-  "name": "layuplist",
+  "name": "@layuplist/client",
   "version": "0.1.0",
   "private": true,
   "scripts": {

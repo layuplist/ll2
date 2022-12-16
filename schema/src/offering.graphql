@@ -1,0 +1,9 @@
+# * TYPES
+
+type Offering implements Identifiable {
+  id: ID!
+  courseId: ID!
+  termId: ID!
+  professorId: ID!
+  timeslot: String!
+}
