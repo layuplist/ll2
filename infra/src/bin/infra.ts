@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 
 import { InfraStack } from '../lib/InfraStack';
 import { ClientStack } from '../lib/ClientStack';
+import { DataStack } from '../lib/DataStack';
 
 const ACCOUNT = '435094978882';
 const REGION = 'us-east-1';
@@ -27,3 +28,4 @@ new ClientStack(app, 'client-stack', {
   repository: CLIENT_REPO_NAME,
   githubOauthTokenName: GITHUB_OAUTH_TOKEN_NAME
 });
+new DataStack(app, 'data-stack', { env });

@@ -1,0 +1,23 @@
+{
+  "name": "@layuplist/schema",
+  "version": "1.0.0",
+  "repository": "https://github.com/layuplist/ll2",
+  "author": "dplanner-dev",
+  "license": "MIT",
+  "main": "dist/types.ts",
+  "scripts": {
+    "dev": "graphql-codegen --config codegen.yml --watch",
+    "codegen": "graphql-codegen --config codegen.yml"
+  },
+  "devDependencies": {
+    "@graphql-codegen/add": "^3.2.3",
+    "@graphql-codegen/cli": "^2.16.1",
+    "@graphql-codegen/introspection": "^2.2.3",
+    "@graphql-codegen/schema-ast": "^2.6.0",
+    "@graphql-codegen/typescript": "^2.8.5",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "graphql": "^16.6.0"
+  }
+}

@@ -22,7 +22,9 @@
     "typeRoots": [
       "./node_modules/@types"
     ],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "exclude": [
     "node_modules",

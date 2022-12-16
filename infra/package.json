@@ -1,17 +1,17 @@
 {
-  "name": "infra",
+  "name": "@layuplist/infra",
   "version": "0.1.0",
   "bin": {
     "infra": "bin/infra.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.3",
+    "@types/jest": "^29.2.4",
     "@types/node": "18.11.9",
     "@types/source-map-support": "^0.5.6",
     "aws-cdk": "2.54.0",
@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@aws-cdk/aws-amplify-alpha": "^2.54.0-alpha.0",
+    "@aws-cdk/aws-appsync-alpha": "^2.55.1-alpha.0",
+    "@layuplist/schema": "1.0.0",
     "aws-cdk-lib": "2.54.0",
     "constructs": "^10.0.0",
     "esbuild": "^0.16.5",

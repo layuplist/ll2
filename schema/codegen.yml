@@ -1,0 +1,24 @@
+overwrite: true
+schema: 'src/**/*.graphql'
+config:
+  includeDirectives: true
+generates:
+  dist/types.ts:
+    plugins:
+      - 'typescript'
+      - add:
+          placement: 'content'
+          content: 'export const typeDefs = `'
+      - schema-ast
+      - add:
+          placement: 'append'
+          content: '`;'
+    config:
+      declarationKind: 'interface'
+      maybeValue: 'T | undefined'
+      namingConvention: 'keep'
+  dist/graphql.schema.json:
+    plugins:
+      - 'introspection'
+    config:
+      minify: true

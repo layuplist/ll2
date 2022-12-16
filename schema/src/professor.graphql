@@ -1,0 +1,8 @@
+# * TYPES
+
+type Professor implements Identifiable {
+  id: ID!
+  name: String!
+  departmentIds: [ID!]!
+  offeringIds: [ID!]!
+}
