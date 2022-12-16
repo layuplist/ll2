@@ -1,8 +1,7 @@
 {
   "name": "layuplist",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "https://github.com/layuplist/ll2",
-  "author": "dplanner-dev",
+  "author": "Jai Smith, Adam McQuilkin",
   "license": "MIT"
 }

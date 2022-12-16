@@ -1,8 +1,6 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { SecretValue, Stack, StackProps } from 'aws-cdk-lib';
-import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { App, CodeCommitSourceCodeProvider, GitHubSourceCodeProvider } from '@aws-cdk/aws-amplify-alpha';
+import { App, GitHubSourceCodeProvider } from '@aws-cdk/aws-amplify-alpha';
 import { BuildSpec } from 'aws-cdk-lib/aws-codebuild';
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -32,23 +30,30 @@ export class ClientStack extends Stack {
       }),
       buildSpec: BuildSpec.fromObjectToYaml({
         version: 1,
-        frontend: {
-          phases: {
-            preBuild: {
-              commands: ['yarn install --frozen-lockfile']
-            },
-            build: {
-              commands: ['yarn build']
+        applications: [
+          {
+            appRoot: 'client',
+            frontend: {
+              phases: {
+                preBuild: {
+                  commands: [
+                    'yarn install --frozen-lockfile'
+                  ]
+                },
+                build: {
+                  commands: ['yarn build']
+                }
+              },
+              artifacts: {
+                baseDirectory: '.next',
+                files: ['**/*']
+              },
+              cache: {
+                paths: ['node_modules/**/*']
+              }
             }
-          },
-          artifacts: {
-            baseDirectory: '.next',
-            files: ['**/*']
-          },
-          cache: {
-            paths: ['node_modules/**/*']
           }
-        }
+        ]
       }),
       role
     });
