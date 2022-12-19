@@ -1,21 +1,33 @@
-import { FormEvent } from "react";
+import { FormEventHandler } from "react";
+import Button from "../Button/Button";
 import styles from "./Input.module.scss";
 
 export interface InputProps {
-  handleSubmit: (e: FormEvent) => void;
+  handleSubmit: FormEventHandler;
   query: string;
   setQuery: (q: string) => void;
+  className?: string;
 }
 
-const Input = ({ handleSubmit, query, setQuery }: InputProps) => {
+const Input = ({
+  handleSubmit,
+  query,
+  setQuery,
+  className = "",
+}: InputProps) => {
   return (
-    <form onSubmit={handleSubmit} className={styles.inputContainer}>
+    <form
+      onSubmit={handleSubmit}
+      className={`${styles.inputContainer} ${className}`}
+    >
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search LL2 here"
       />
-      <button type="submit">search</button>
+      <Button onClick={() => null} type="submit">
+        search
+      </Button>
     </form>
   );
 };

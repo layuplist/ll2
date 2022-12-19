@@ -1,0 +1,80 @@
+.homeContainer {
+    .homeFeatureLayout {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        &>* {
+            margin: 6px auto;
+            text-align: center;
+        }
+
+        // ! This isn't great for mobile
+        margin: 120px 0px 24px;
+
+        img {
+            width: 80px;
+            height: 80px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .reviewCount {
+            font-size: 14px;
+            font-weight: 400;
+            color: #777;
+        }
+    }
+
+    .homeSearchForm {
+        margin-bottom: 15px;
+    }
+
+    .homeAnchorLinksContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 9px;
+
+        .homeAnchorLinkContainer {
+            margin: 0px 0px 18px;
+            box-sizing: border-box;
+
+            .homeAnchorLink {
+                display: block;
+                padding: 8px 12px;
+
+                color: #333;
+                background-color: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+
+                &:hover {
+                    background-color: #eee;
+                }
+            }
+        }
+    }
+
+    .contributeAnchorContainer {
+        margin: 0px auto 36px;
+        text-align: center;
+
+        .contributeAnchor {
+            color: #337ab7;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+}

@@ -12,8 +12,11 @@
         .supportLink {
             color: #337ab7;
             text-align: center;
-            text-decoration: underline;
             margin: 0px auto;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
     }
 }

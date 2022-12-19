@@ -8,6 +8,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <div className="app-container">
       <Header />
       <Component {...pageProps} />
+      <div id="home-footer-spacer" />
       <Footer />
     </div>
   );

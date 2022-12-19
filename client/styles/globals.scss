@@ -7,8 +7,16 @@ body {
   background-color: white;
 }
 
+p {
+  font-size: 14px;
+  font-weight: 400;
+}
+
 .app-container {
+  display: flex;
+  flex-direction: column;
   margin: 0px auto;
+  min-height: 100vh;
 
   @media (min-width: 768px) {
     width: 750px;
@@ -20,6 +28,10 @@ body {
 
   @media (min-width: 1200px) {
     width: 1170px;
+  }
+
+  #home-footer-spacer {
+    flex: 1;
   }
 }
 
