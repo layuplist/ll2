@@ -1,0 +1,43 @@
+.courseContainer {
+    section {
+        margin-bottom: 24px;
+
+        &:last-child {
+            margin-bottom: 0px;
+        }
+    }
+
+    .introContainer {
+        .introLastOffered {
+            font-size: 18px;
+            margin: 10px 0px;
+        }
+    }
+
+    .scoresContainer {
+        // TODO add media query here
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+
+        .scoreContainer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 4px;
+
+            &>* {
+                text-align: center;
+                color: #333;
+                margin: 0px auto;
+            }
+
+            .scoreArrow {}
+
+            .scoreText {}
+        }
+    }
+}

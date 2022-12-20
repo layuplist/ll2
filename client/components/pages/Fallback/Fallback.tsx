@@ -9,10 +9,7 @@ const Fallback = () => {
         <p>
           We couldn&apos;t find this page on our servers. If you believe this
           page should exist, let us know at{" "}
-          <a className={styles.supportLink} href="mailto:support@layuplist.com">
-            support@layuplist.com
-          </a>
-          .
+          <a href="mailto:support@layuplist.com">support@layuplist.com</a>.
         </p>
       </div>
     </div>
