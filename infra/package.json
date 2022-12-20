@@ -1,14 +1,13 @@
 {
   "name": "@layuplist/infra",
-  "version": "0.1.0",
-  "bin": {
-    "infra": "bin/infra.js"
-  },
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "cdk deploy"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",
