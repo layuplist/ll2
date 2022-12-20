@@ -7,8 +7,9 @@
   "main": "dist/types.ts",
   "scripts": {
     "dev": "graphql-codegen --config codegen.yml --watch",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "build": "graphql-codegen --config codegen.yml"
   },
+  "type": "module",
   "devDependencies": {
     "@graphql-codegen/add": "^3.2.3",
     "@graphql-codegen/cli": "^2.16.1",

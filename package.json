@@ -5,5 +5,9 @@
   "author": "dplanner-dev",
   "license": "MIT",
   "workspaces": ["infra", "schema", "client"],
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "yarn workspace @layuplist/schema build && yarn workspace @layuplist/client build && yarn workspace @layuplist/infra build",
+    "deploy": "yarn build && yarn workspace @layuplist/infra deploy --all"
+  }
 }
