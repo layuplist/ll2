@@ -17,11 +17,13 @@ const Header = () => {
   return (
     <header className={styles.headerContainer}>
       <div className={styles.headerFlexContainer}>
-        <img
-          className={styles.headerLogo}
-          alt="Layup List logo"
-          src="/logo.svg"
-        />
+        <a href="/" className={styles.headerLogoContainer}>
+          <img
+            className={styles.headerLogo}
+            alt="Layup List logo"
+            src="/logo.svg"
+          />
+        </a>
         <a className={styles.headerLink} href="/best">
           Best Classes
         </a>
