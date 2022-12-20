@@ -2,6 +2,8 @@
 // import { Template } from 'aws-cdk-lib/assertions';
 // import * as Infra from '../lib/infra-stack';
 
+import { test } from '@jest/globals';
+
 // example test. To run these tests, uncomment this file along with the
 // example resource in lib/infra-stack.ts
 test('SQS Queue Created', () => {
