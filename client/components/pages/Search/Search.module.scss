@@ -1,0 +1,45 @@
+.searchContainer {
+    table {
+        width: 100%;
+        color: #333;
+        border-spacing: 0px;
+
+        thead {
+            vertical-align: top;
+            border-bottom: 1px solid #ddd;
+            border-spacing: 0;
+            border-collapse: collapse;
+
+            th {
+                padding: 7px 9px;
+                text-align: left;
+            }
+        }
+
+        tbody {
+            tr {
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #f2f2f2;
+                }
+
+                td {
+                    vertical-align: top;
+                    border-top: 1px solid #ddd;
+                    border-spacing: 0;
+                    border-collapse: collapse;
+                    padding: 7px 9px;
+
+                    a {
+                        color: #337ab7;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
