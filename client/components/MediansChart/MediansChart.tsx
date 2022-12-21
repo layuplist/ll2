@@ -1,42 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { AxisBottom, AxisLeft } from "@visx/axis";
+import { AxisBottom, AxisLeft, TickFormatter } from "@visx/axis";
 import { Bar } from "@visx/shape";
 import { Group } from "@visx/group";
-import { scaleBand } from "@visx/scale";
+import { scaleBand, scaleLinear } from "@visx/scale";
 
 import { CourseMedian } from "../pages/Course/Course";
 
 export interface MediansChartProps {
   medians: CourseMedian[];
 }
-
-const gradeToLabel = (g: number): string => {
-  switch (g) {
-    case 12:
-      return "A";
-    case 11:
-      return "A-";
-    case 10:
-      return "B+";
-    case 9:
-      return "B";
-    case 8:
-      return "B-";
-    case 7:
-      return "C+";
-    case 6:
-      return "C";
-    case 5:
-      return "C-";
-    case 4:
-      return "";
-    case 3:
-      return "D";
-    default:
-      return "";
-  }
-};
 
 const MediansChart = ({ medians }: MediansChartProps) => {
   const [chartWidth, setChartWidth] = useState(250);
@@ -66,11 +39,10 @@ const MediansChart = ({ medians }: MediansChartProps) => {
 
   const yScale = useMemo(
     () =>
-      scaleBand<string>({
+      scaleLinear<number>({
         range: [yMax, 0],
         round: true,
-        domain: ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D"],
-        reverse: true,
+        domain: [3, 12],
       }),
     [yMax]
   );
@@ -87,7 +59,7 @@ const MediansChart = ({ medians }: MediansChartProps) => {
           {medians.map((m) => {
             const label = m.termCode;
             const barWidth = xScale.bandwidth();
-            const barHeight = yMax - (yScale(gradeToLabel(m.medianGrade)) ?? 0);
+            const barHeight = yMax - yScale(m.medianGrade);
             const barX = xScale(label);
             const barY = yMax - barHeight;
 
@@ -116,13 +88,38 @@ const MediansChart = ({ medians }: MediansChartProps) => {
           <AxisLeft
             scale={yScale}
             numTicks={9}
-            // top={0}
+            tickFormat={(d) => {
+              switch (d) {
+                case 12:
+                  return "A";
+                case 11:
+                  return "A-";
+                case 10:
+                  return "B+";
+                case 9:
+                  return "B";
+                case 8:
+                  return "B-";
+                case 7:
+                  return "C+";
+                case 6:
+                  return "C";
+                case 5:
+                  return "C-";
+                case 4:
+                  return "";
+                case 3:
+                  return "D";
+                default:
+                  return "";
+              }
+            }}
             tickLabelProps={(e) => ({
               fill: "black",
               fontSize: 11,
               textAnchor: "start",
               x: -24,
-              y: (yScale(e) ?? 0) + 12,
+              y: (yScale(e) ?? 0) + 4,
             })}
           />
         </Group>
