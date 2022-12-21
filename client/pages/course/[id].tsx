@@ -26,9 +26,9 @@ export const getStaticProps: GetStaticProps<CourseProps> = () => {
         qualityScore: 758,
         layupScore: -107,
         medians: [
-          { termCode: "22W", medianGrade: "A" },
-          { termCode: "21F", medianGrade: "A" },
-          { termCode: "21S", medianGrade: "A-" },
+          { termCode: "22W", medianGrade: 12 },
+          { termCode: "21F", medianGrade: 12 },
+          { termCode: "21S", medianGrade: 11 },
         ],
         reviews: [
           {
@@ -66,9 +66,9 @@ export const getStaticProps: GetStaticProps<CourseProps> = () => {
           qualityScore: 230924,
           layupScore: -234834,
           medians: [
-            { termCode: "22W", medianGrade: "D" },
-            { termCode: "21F", medianGrade: "A" },
-            { termCode: "21S", medianGrade: "D" },
+            { termCode: "22W", medianGrade: 3 },
+            { termCode: "21F", medianGrade: 12 },
+            { termCode: "21S", medianGrade: 3 },
           ],
           reviews: [],
         },

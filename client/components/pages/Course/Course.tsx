@@ -1,11 +1,13 @@
 import { useRouter } from "next/router";
 import { FormEventHandler, useState } from "react";
 import Input from "../../Input/Input";
+import MediansChart from "../../MediansChart/MediansChart";
 import styles from "./Course.module.scss";
 
 export interface CourseMedian {
   termCode: string;
-  medianGrade: string;
+  // ? This feels weird to have this as a non-grade number
+  medianGrade: number;
 }
 
 export interface CourseReview {
@@ -128,7 +130,7 @@ const Course = ({ course, similarCourses }: CourseProps) => {
 
       <section>
         <h2>Medians</h2>
-        <div>Graph lol</div>
+        <MediansChart medians={course.medians} />
       </section>
 
       <section>
