@@ -1,7 +1,0 @@
-# * TYPES
-
-type Comment implements Identifiable {
-  id: ID!
-  offeringId: ID!
-  text: String!
-}

@@ -16,7 +16,7 @@ generates:
     config:
       declarationKind: 'interface'
       maybeValue: 'T | undefined'
-      namingConvention: 'keep'
+      namingConvention: change-case-all#pascalCase
   dist/graphql.schema.json:
     plugins:
       - 'introspection'

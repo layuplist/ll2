@@ -1,0 +1,14 @@
+# * TYPES
+
+type Review implements Identifiable {
+  id: ID!
+  offeringId: ID!
+  text: String!
+}
+
+# * QUERIES
+
+extend type Query {
+  review(id: ID!): Review
+  reviews(ids: [ID]!): [Review]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@layuplist/backend",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "node ./esbuild.mjs"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "esbuild": "^0.17.3",
+    "glob": "^8.1.0",
+    "rimraf": "^4.1.1",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.254.0",
+    "@aws-sdk/lib-dynamodb": "^3.254.0",
+    "uuid": "^9.0.0"
+  }
+}

@@ -2,9 +2,9 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 
-import { InfraStack } from '../lib/InfraStack';
-import { ClientStack } from '../lib/ClientStack';
-import { DataStack } from '../lib/DataStack';
+import { InfraStack } from './lib/InfraStack';
+import { ClientStack } from './lib/ClientStack';
+import { ApiStack } from './lib/ApiStack';
 
 const ACCOUNT = '435094978882';
 const REGION = 'us-east-1';
@@ -21,11 +21,14 @@ const env = { account: ACCOUNT, region: REGION };
 const app = new cdk.App();
 
 // create stacks
-new InfraStack(app, 'infra-stack', { env });
-new ClientStack(app, 'client-stack', {
+const infra = new InfraStack(app, 'infra-stack', { env });
+const client = new ClientStack(app, 'client-stack', {
   env,
   owner: CLIENT_REPO_OWNER,
   repository: CLIENT_REPO_NAME,
   githubOauthTokenName: GITHUB_OAUTH_TOKEN_NAME
 });
-new DataStack(app, 'data-stack', { env });
+const data = new ApiStack(app, 'api-stack', {
+  env,
+  tables: infra.tables
+});

@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --experimental-specifier-resolution=node --esm src/bin/infra.ts",
+  "app": "npx ts-node --experimental-specifier-resolution=node --esm src/index.ts",
   "watch": {
     "include": [
       "**"

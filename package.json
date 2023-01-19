@@ -4,10 +4,10 @@
   "repository": "https://github.com/layuplist/ll2",
   "author": "dplanner-dev",
   "license": "MIT",
-  "workspaces": ["infra", "schema", "client"],
+  "workspaces": ["schema", "backend", "client", "infra"],
   "private": true,
   "scripts": {
-    "build": "yarn workspace @layuplist/schema build && yarn workspace @layuplist/client build && yarn workspace @layuplist/infra build",
+    "build": "yarn workspaces run build",
     "deploy": "yarn build && yarn workspace @layuplist/infra deploy --all"
   }
 }

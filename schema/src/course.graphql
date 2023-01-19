@@ -1,16 +1,54 @@
 # * TYPES
 
+"""
+A course, denoted by a combination of department, number, and subnumber.
+"""
 type Course implements Identifiable {
   id: ID!
-  departmentIds: [ID]!
+  departmentId: ID!
   number: Int!
   subnumber: Int!
   name: String!
+  """
+  Current description of this course, this is derived from the description of the most recent offering.
+  """
   description: String!
   xlist: CourseGroup
+  """
+  Instances of this course, these provide ties to professors, timeslots, reviews, etc.
+  """
   offerings: [Offering]
 }
 
 type CourseGroup {
   courseIds: [ID]!
+}
+
+# * QUERIES
+
+input CourseFilter {
+  departmentId: ID
+  number: Int
+  subnumber: Int
+  name: String
+}
+
+extend type Query {
+  getCourseById(id: ID!): Course
+  getCourses(ids: [ID]!): [Course]
+  listCourses(filter: CourseFilter): [Course]
+}
+
+# * MUTATIONS
+
+input CourseInput {
+  departmentId: ID!
+  number: Int!
+  subnumber: Int!
+  name: String!
+  description: String!
+}
+
+extend type Mutation {
+  addCourse(input: CourseInput): ID
 }
