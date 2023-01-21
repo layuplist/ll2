@@ -41,7 +41,7 @@ extend type Query {
 
 # * MUTATIONS
 
-input CourseInput {
+input AddCourseInput {
   departmentId: ID!
   number: Int!
   subnumber: Int!
@@ -49,6 +49,16 @@ input CourseInput {
   description: String!
 }
 
+input UpdateCourseInput {
+  departmentId: ID
+  number: Int
+  subnumber: Int
+  name: String
+  description: String
+}
+
 extend type Mutation {
-  addCourse(input: CourseInput): ID
+  addCourse(input: AddCourseInput!): ID
+  updateCourse(id: ID!, input: UpdateCourseInput!): ID
+  deleteCourse(id: ID!): ID
 }

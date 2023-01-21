@@ -6,19 +6,25 @@ import {
   ScanCommand,
   ScanCommandInput,
   PutCommandInput,
-  PutCommand
+  PutCommand,
+  UpdateCommandInput,
+  UpdateCommand,
+  DeleteCommandInput,
+  DeleteCommand
 } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 
 import type {
   MutationAddCourseArgs,
+  MutationDeleteCourseArgs,
+  MutationUpdateCourseArgs,
   QueryGetCourseByIdArgs,
   QueryGetCoursesArgs,
   QueryListCoursesArgs
 } from '@layuplist/schema';
 
 import type { AppSyncEvent } from 'utils/types';
-import { isEmpty } from 'utils/misc';
+import { generateDdbEqualsParams } from 'utils/misc';
 import { docClient } from 'utils/ddb';
 
 const COURSES_TABLE = process.env.COURSES_TABLE!;
@@ -36,7 +42,7 @@ const getCourseById = async (args: QueryGetCourseByIdArgs) => {
     const { Item } = await docClient.send(new GetCommand(params));
     return Item;
   } catch (err) {
-    console.error(err);
+    console.trace(err);
     return;
   }
 };
@@ -54,57 +60,31 @@ const getCourses = async (args: QueryGetCoursesArgs) => {
     const { Responses } = await docClient.send(new BatchGetCommand(params));
     return Responses ? Object.values(Responses!).flat() : [];
   } catch (err) {
-    console.error(err);
+    console.trace(err);
     return;
   }
 }
 
 const listCourses = async (args: QueryListCoursesArgs) => {
-  let values: ScanCommandInput['ExpressionAttributeValues'] = {};
-  let names: ScanCommandInput['ExpressionAttributeNames'] = {};
-  let filter: string[] | string | undefined = [];
+  let params: ScanCommandInput = {
+    TableName: COURSES_TABLE
+  };
 
   if (args.filter) {
-    if (args.filter.departmentId) {
-      values[':departmentId'] = args.filter.departmentId;
-      filter.push('departmentId = :departmentId');
-    }
-    if (args.filter.number) {
-      values[':number'] = args.filter.number;
-      // 'number' is a reserved keyword, this maps it to '#number' which is safe
-      names['#number'] = 'number';
-      filter.push('number = :number');
-    }
-    if (args.filter.subnumber) {
-      values[':subnumber'] = args.filter.subnumber;
-      filter.push('subnumber = :subnumber');
-    }
-    if (args.filter.name) {
-      values[':name'] = args.filter.name;
-      filter.push('name contains :name');
-    }
+    const { values, names, expression } = generateDdbEqualsParams(args.filter!);
+    params = {
+      ...params,
+      ExpressionAttributeValues: values,
+      ExpressionAttributeNames: names,
+      FilterExpression: expression?.join(' and ')
+    };
   }
-
-  // format filter arg
-  filter = filter.join(' and ');
-
-  // empty parameters are not accepted
-  if (isEmpty(values)) values = undefined;
-  if (isEmpty(names)) names = undefined;
-  if (filter.length === 0) filter = undefined;
-
-  const params: ScanCommandInput = {
-    TableName: COURSES_TABLE,
-    ExpressionAttributeValues: values,
-    ExpressionAttributeNames: names,
-    FilterExpression: filter
-  };
 
   try {
     const { Items } = await docClient.send(new ScanCommand(params));
     return Items || [];
   } catch (err) {
-    console.error(err);
+    console.trace(err);
     return;
   }
 }
@@ -122,10 +102,54 @@ const addCourse = async (args: MutationAddCourseArgs) => {
     await docClient.send(new PutCommand(params));
     return params.Item!.id;
   } catch (err) {
-    console.error(err);
+    console.trace(err);
     return;
   }
 }
+
+const updateCourse = async (args: MutationUpdateCourseArgs) => {
+  const { values, names, expression } = generateDdbEqualsParams(args.input);
+
+  if (!expression) {
+    console.info('updateCourse called with no updates');
+    return;
+  }
+
+  let params: UpdateCommandInput = {
+    TableName: COURSES_TABLE,
+    ExpressionAttributeValues: values,
+    ExpressionAttributeNames: names,
+    UpdateExpression: `set ${expression.join(', ')}`,
+    Key: {
+      id: args.id
+    }
+  };
+
+  try {
+    await docClient.send(new UpdateCommand(params));
+    return args.id;
+  } catch (err) {
+    console.trace(err);
+    return;
+  }
+};
+
+const deleteCourse = async (args: MutationDeleteCourseArgs) => {
+  const params: DeleteCommandInput = {
+    TableName: COURSES_TABLE,
+    Key: {
+      id: args.id
+    }
+  };
+
+  try {
+    await docClient.send(new DeleteCommand(params));
+    return args.id;
+  } catch (err) {
+    console.trace(err);
+    return;
+  }
+};
 
 // * handler
 
@@ -134,6 +158,8 @@ export const handler = async (event:
   | AppSyncEvent<'getCourses', QueryGetCoursesArgs>
   | AppSyncEvent<'listCourses', QueryListCoursesArgs>
   | AppSyncEvent<'addCourse', MutationAddCourseArgs>
+  | AppSyncEvent<'updateCourse', MutationUpdateCourseArgs>
+  | AppSyncEvent<'deleteCourse', MutationDeleteCourseArgs>
 ) => {
   switch(event.info.fieldName) {
     case 'getCourseById':
@@ -144,6 +170,10 @@ export const handler = async (event:
       return await listCourses(event.arguments as QueryListCoursesArgs);
     case 'addCourse':
       return await addCourse(event.arguments as MutationAddCourseArgs);
+    case 'updateCourse':
+      return await updateCourse(event.arguments as MutationUpdateCourseArgs);
+    case 'deleteCourse':
+      return await deleteCourse(event.arguments as MutationDeleteCourseArgs);
     default:
       return null;
   };

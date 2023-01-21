@@ -22,4 +22,12 @@ export default (coursesDataSource: LambdaDataSource) => {
     typeName: 'Mutation',
     fieldName: 'addCourse'
   });
+  coursesDataSource.createResolver('mutation-updatecourse-resolver', {
+    typeName: 'Mutation',
+    fieldName: 'updateCourse'
+  });
+  coursesDataSource.createResolver('mutation-deletecourse-resolver', {
+    typeName: 'Mutation',
+    fieldName: 'deleteCourse'
+  });
 };
