@@ -1,26 +1,12 @@
-export const isEmpty = (obj: Object) => Object.keys(obj).length === 0;
+import type { AddCourseInput, AddOfferingInput, AddReviewInput } from "@layuplist/schema";
 
-export const generateDdbEqualsParams = (args: Record<string, any>) => {
-  let values: Record<string, NonNullable<any>> = {};
-  let names: Record<string, NonNullable<any>> = {};
-  const expression: string[] = [];
+export const isEmpty = (obj: Record<string, unknown>) => Object.keys(obj).length === 0;
 
-  Object.entries(args).forEach(([key, value]) => {
-    if (value == null) return;
+export const generateCourseId = (course: AddCourseInput): string =>
+  `${course.department}-${course.number}`;
 
-    // set value
-    values[`:${key}`] = value;
+export const generateOfferingId = (offering: AddOfferingInput) =>
+  `${offering.department}-${offering.number}-${offering.term}-${offering.section}`;
 
-    // avoid reserved keywords
-    names[`#${key}`] = key;
-
-    // add to expression
-    expression.push(`#${key} = :${key}`)
-  });
-
-  return {
-    values: isEmpty(values) ? undefined : values,
-    names: isEmpty(names) ? undefined : names,
-    expression: expression.length > 0 ? expression : undefined
-  };
-};
+export const generateReviewId = (review: AddReviewInput): string =>
+  `${review.department}-${review.number}-${review.term}-${review.section}-${review.userEmail}`;

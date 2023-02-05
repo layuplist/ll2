@@ -13,12 +13,14 @@ import {
   Duration,
   CfnOutput,
 } from 'aws-cdk-lib';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code, Function, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 import { typeDefs } from '@layuplist/schema';
 
 import createCourseResolvers from '../utils/resolvers/courseResolvers';
+import createReviewResolvers from '../utils/resolvers/reviewResolvers';
 
 const SchemaString = (definition: string): ISchema => ({
   bind: (api: IGraphqlApi) => ({
@@ -30,13 +32,17 @@ const SchemaString = (definition: string): ISchema => ({
 type ApiStackProps = StackProps & {
   tables: {
     courses: Table,
-    reviews: Table
+    offerings: Table,
+    reviews: Table,
+    professors: Table
   }
 }
 
 export class ApiStack extends Stack {
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
+
+    // gql api
 
     const api = new GraphqlApi(this, 'graphql-api', {
       name: 'graphql-api',
@@ -60,24 +66,64 @@ export class ApiStack extends Stack {
 
     // data sources
 
-    const coursesLambda = new Function(this, 'appsync-courses-handler', {
+    const coursesLambda = new Function(this, 'appsync-courses-resolver', {
+      functionName: 'appsync-courses-resolver',
       runtime: Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: Code.fromAsset('../backend/dist/resolvers/courses'),
+      handler: 'index.default',
+      code: Code.fromAsset('../backend/dist/handlers/resolvers/courses'),
       memorySize: 256,
+      architecture: Architecture.ARM_64,
       environment: {
         COURSES_TABLE: props.tables.courses.tableName
       }
     });
     props.tables.courses.grantFullAccess(coursesLambda);
     const coursesDataSource = api.addLambdaDataSource(
+      // appsync requires this to be in UpperCamel, so it is intentionally 
+      // inconsistent with the rest of our resource naming
       'CoursesDataSource',
       coursesLambda
+    );
+
+    const reviewsLambda = new Function(this, 'appsync-reviews-resolver', {
+      functionName: 'appsync-reviews-resolver',
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'index.default',
+      code: Code.fromAsset('../backend/dist/handlers/resolvers/reviews'),
+      memorySize: 256,
+      architecture: Architecture.ARM_64,
+      environment: {
+        REVIEWS_TABLE: props.tables.reviews.tableName
+      }
+    });
+    props.tables.reviews.grantFullAccess(reviewsLambda);
+    const reviewsDataSource = api.addLambdaDataSource(
+      'ReviewsDataSource',
+      reviewsLambda
     );
 
     // resolvers
 
     createCourseResolvers(coursesDataSource);
+    createReviewResolvers(reviewsDataSource);
+
+    // stream handlers
+
+    const reviewStreamLambda = new Function(this, 'review-stream-handler', {
+      functionName: 'review-stream-handler',
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'index.default',
+      code: Code.fromAsset('../backend/dist/handlers/streams/reviews'),
+      memorySize: 256,
+      architecture: Architecture.ARM_64,
+      environment: {
+        COURSES_TABLE: props.tables.courses.tableName
+      }
+    });
+    props.tables.courses.grantFullAccess(reviewStreamLambda);
+    reviewStreamLambda.addEventSource(new DynamoEventSource(props.tables.reviews, {
+      startingPosition: StartingPosition.LATEST
+    }));
 
     // outputs
 

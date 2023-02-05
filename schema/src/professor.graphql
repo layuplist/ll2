@@ -1,8 +1,38 @@
 # * TYPES
 
-type Professor implements Identifiable {
+type Professor {
   id: ID!
   name: String!
-  departmentIds: [ID!]!
-  offeringIds: [ID!]!
+  departments: [String!]
+  offerings: [Offering!]
+}
+
+# * QUERIES
+
+input ProfessorFilterInput {
+  department: String!
+}
+
+extend type Query {
+  getProfessor(id: ID!): Professor
+  getProfessors(ids: [ID!]!): [Professor]!
+  listProfessors(filter: ProfessorFilterInput): [Professor]!
+}
+
+# * MUTATIONS
+
+input AddProfessorInput {
+  name: String!
+  departmentCodes: [String!]
+}
+
+input UpdateProfessorInput {
+  name: String
+  departmentCodes: [String!]
+}
+
+extend type Mutation {
+  addProfessor(professor: AddProfessorInput!): MutationResponseWithId!
+  updateProfessor(id: ID!, professor: UpdateProfessorInput!): MutationResponse!
+  deleteProfessor(id: ID!): MutationResponse!
 }

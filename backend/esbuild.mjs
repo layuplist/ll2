@@ -8,7 +8,7 @@ await rimraf('dist');
 
 // build
 await build({
-  entryPoints: glob.sync('src/resolvers/*'),
+  entryPoints: glob.sync('src/handlers/**/*.ts'),
   entryNames: '[dir]/[name]/index',
   bundle: true,
   // easier to debug, should be enabled in prod once local testing is in place

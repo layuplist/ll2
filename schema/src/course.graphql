@@ -1,64 +1,79 @@
 # * TYPES
 
 """
-A course, denoted by a combination of department, number, and subnumber.
+A course, denoted by a combination of department and number.
 """
-type Course implements Identifiable {
+type Course {
   id: ID!
-  departmentId: ID!
-  number: Int!
-  subnumber: Int!
-  name: String!
   """
-  Current description of this course, this is derived from the description of the most recent offering.
+  Offering department.
   """
-  description: String!
+  department: String!
+  """
+  Course number.
+  """
+  number: Float!
+  """
+  Connection to crosslisted courses.
+  """
   xlist: CourseGroup
+  """
+  Course quality score, aggregated for reviews across all offerings.
+  """
+  qualityScore: Int!
+  """
+  Course layup score, aggregated for reviews across all offerings.
+  """
+  layupScore: Int!
   """
   Instances of this course, these provide ties to professors, timeslots, reviews, etc.
   """
-  offerings: [Offering]
+  offerings(term: Int): [Offering]
 }
 
 type CourseGroup {
-  courseIds: [ID]!
+  """
+  Crosslisted courses.
+  """
+  courseIds: [ID!]!
 }
 
 # * QUERIES
 
-input CourseFilter {
-  departmentId: ID
-  number: Int
-  subnumber: Int
-  name: String
+input CourseFilterInput {
+  department: String
+  number: Float
+  term: Int
 }
 
 extend type Query {
-  getCourseById(id: ID!): Course
-  getCourses(ids: [ID]!): [Course]
-  listCourses(filter: CourseFilter): [Course]
+  getCourse(id: ID!): Course
+  getCourses(ids: [ID!]!): [Course]!
+  listCourses(filter: CourseFilterInput, sortBy: String): [Course]!
 }
 
 # * MUTATIONS
 
+input CourseGroupInput {
+  courseIds: [ID!]!
+}
+
 input AddCourseInput {
-  departmentId: ID!
-  number: Int!
-  subnumber: Int!
-  name: String!
-  description: String!
+  department: String!
+  number: Float!
+  xlist: CourseGroupInput
+  qualityScore: Int = 0
+  layupScore: Int = 0
 }
 
 input UpdateCourseInput {
-  departmentId: ID
-  number: Int
-  subnumber: Int
-  name: String
-  description: String
+  xlist: CourseGroupInput
+  qualityScore: Int
+  layupScore: Int
 }
 
 extend type Mutation {
-  addCourse(input: AddCourseInput!): ID
-  updateCourse(id: ID!, input: UpdateCourseInput!): ID
-  deleteCourse(id: ID!): ID
+  addCourse(course: AddCourseInput!): MutationResponseWithId!
+  updateCourse(id: ID!, course: UpdateCourseInput!): MutationResponse!
+  deleteCourse(id: ID!): MutationResponse!
 }

@@ -4,8 +4,13 @@ scalar AWSDate
 
 # * TYPES
 
-interface Identifiable {
+interface MutationResponse {
+  success: Boolean!
+}
+
+type MutationResponseWithId implements MutationResponse {
   id: ID!
+  success: Boolean!
 }
 
 # * QUERIES

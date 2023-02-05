@@ -1,9 +1,82 @@
 # * TYPES
 
-type Offering implements Identifiable {
-  id: ID!
-  courseId: ID!
-  termId: ID!
-  professorId: ID!
+"""
+An instance of a course, tied to a specific term and section.
+"""
+type Offering {
+  """
+  Offering department.
+  """
+  department: String!
+  """
+  Course number.
+  """
+  number: Float!
+  """
+  Term code.
+  """
+  term: Int!
+  """
+  Section.
+  """
+  section: Int!
+  """
+  Primary professor.
+  """
+  professor: Professor!
+  """
+  Timeslot (code).
+  """
   timeslot: String!
+  """
+  Course title.
+  """
+  title: String!
+  """
+  Current description of this course, this is derived from the description of the most recent offering.
+  """
+  description: String!
+}
+
+# * QUERIES
+
+input OfferingFilterInput {
+  department: String
+  number: Float
+  term: Int
+  section: Int
+  timeslot: String
+  title: String
+}
+
+extend type Query {
+  getOffering(id: ID!): Offering
+  getOfferings(ids: [ID!]!): [Offering]!
+  listOfferings(filter: OfferingFilterInput): [Offering]!
+}
+
+# * MUTATIONS
+
+input AddOfferingInput {
+  department: String!
+  number: Float!
+  term: Int!
+  section: Int!
+  professorEmail: String!
+  timeslot: String!
+  title: String!
+  description: String!
+}
+
+input UpdateOfferingInput {
+  professorEmail: String
+  timeslot: String
+  title: String
+  description: String
+}
+
+extend type Mutation {
+  addOffering(offering: AddOfferingInput!): MutationResponseWithId!
+  updateOffering(id: ID!, offering: UpdateOfferingInput!): MutationResponse!
+  deleteOffering(id: ID!): MutationResponse!
 }

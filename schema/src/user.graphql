@@ -1,6 +1,6 @@
 # * TYPES
 
-type User implements Identifiable {
-  id: ID!
-  reviews: [Review]
+type User {
+  email: String!
+  reviews: [Review!]
 }

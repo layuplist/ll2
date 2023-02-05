@@ -1,14 +1,77 @@
 # * TYPES
 
-type Review implements Identifiable {
-  id: ID!
-  offeringId: ID!
-  text: String!
+type Review {
+  """
+  Offering department.
+  """
+  department: String!
+  """
+  Course number.
+  """
+  number: Float!
+  """
+  Term code.
+  """
+  term: Int!
+  """
+  Section.
+  """
+  section: Int!
+  """
+  Author email.
+  """
+  userEmail: String!
+  """
+  Quality score given, -1 or 1.
+  """
+  qualityScore: Int
+  """
+  Layup score given, -1 or 1.
+  """
+  layupScore: Int
+  """
+  Comment text.
+  """
+  comment: String
 }
 
 # * QUERIES
 
+input ReviewFilterInput {
+  department: String
+  number: Float
+  term: Int
+  section: Int
+  userEmail: String
+}
+
 extend type Query {
-  review(id: ID!): Review
-  reviews(ids: [ID]!): [Review]
+  getReview(id: ID!): Review
+  getReviews(ids: [ID!]!): [Review]!
+  listReviews(filter: ReviewFilterInput): [Review]!
+}
+
+# * MUTATIONS
+
+input AddReviewInput {
+  department: String!
+  number: Float!
+  term: Int!
+  section: Int!
+  userEmail: String!
+  qualityScore: Int
+  layupScore: Int
+  comment: String
+}
+
+input UpdateReviewInput {
+  qualityScore: Int
+  layupScore: Int
+  comment: String
+}
+
+extend type Mutation {
+  addReview(review: AddReviewInput!): MutationResponseWithId!
+  updateReview(id: ID!, review: UpdateReviewInput!): MutationResponse!
+  deleteReview(id: ID!): MutationResponse!
 }

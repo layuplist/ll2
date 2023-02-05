@@ -1,9 +1,0 @@
-# * TYPES
-
-type Department implements Identifiable {
-  id: ID!
-  courseIds: [ID!]!
-  offeringIds: [ID!]!
-  name: String!
-  code: String!
-}

@@ -6,15 +6,17 @@
     "build": "node ./esbuild.mjs"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.110",
     "@types/uuid": "^9.0.0",
     "esbuild": "^0.17.3",
     "glob": "^8.1.0",
-    "rimraf": "^4.1.1",
-    "typescript": "^4.9.4"
+    "rimraf": "^4.1.1"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.254.0",
     "@aws-sdk/lib-dynamodb": "^3.254.0",
+    "@layuplist/schema": "workspace:^",
+    "@middy/core": "^4.2.3",
     "uuid": "^9.0.0"
   }
 }

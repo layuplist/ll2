@@ -1,8 +1,7 @@
 # * TYPES
 
-type Term implements Identifiable {
-  id: ID!
-  code: String!
+type Term {
+  code: Int!
   start: AWSDate!
   end: AWSDate!
 }

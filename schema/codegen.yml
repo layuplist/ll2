@@ -14,7 +14,7 @@ generates:
           placement: 'append'
           content: '`;'
     config:
-      declarationKind: 'interface'
+      declarationKind: 'type'
       maybeValue: 'T | undefined'
       namingConvention: change-case-all#pascalCase
   dist/graphql.schema.json:

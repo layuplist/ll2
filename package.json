@@ -4,10 +4,23 @@
   "repository": "https://github.com/layuplist/ll2",
   "author": "dplanner-dev",
   "license": "MIT",
-  "workspaces": ["schema", "backend", "client", "infra"],
+  "workspaces": [
+    "schema",
+    "backend",
+    "client",
+    "infra"
+  ],
   "private": true,
   "scripts": {
-    "build": "yarn workspaces run build",
+    "lint": "eslint .",
+    "build": "yarn workspace @layuplist/schema build && (yarn workspace @layuplist/client build & yarn workspace @layuplist/backend build) && yarn workspace @layuplist/infra build",
     "deploy": "yarn build && yarn workspace @layuplist/infra deploy --all"
-  }
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "eslint": "^8.33.0",
+    "typescript": "^4.9.5"
+  },
+  "packageManager": "yarn@3.4.1"
 }
