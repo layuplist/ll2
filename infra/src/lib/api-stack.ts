@@ -20,9 +20,9 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 import { typeDefs } from '@layuplist/schema';
 
-import createCourseResolvers from '../utils/resolvers/courseResolvers';
-import createOfferingResolvers from '../utils/resolvers/offeringResolvers';
-import createReviewResolvers from '../utils/resolvers/reviewResolvers';
+import createCourseResolvers from '../utils/resolvers/course-resolvers';
+import createOfferingResolvers from '../utils/resolvers/offering-resolvers';
+import createReviewResolvers from '../utils/resolvers/review-resolvers';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 

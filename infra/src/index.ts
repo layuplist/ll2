@@ -2,10 +2,10 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 
-import { InfraStack } from './lib/InfraStack';
-import { ClientStack } from './lib/ClientStack';
-import { ApiStack } from './lib/ApiStack';
-import { AuthStack } from './lib/AuthStack';
+import { InfraStack } from './lib/infra-stack';
+import { ClientStack } from './lib/client-stack';
+import { ApiStack } from './lib/api-stack';
+import { AuthStack } from './lib/auth-stack';
 
 const ACCOUNT = '435094978882';
 const REGION = 'us-east-1';

@@ -1,5 +1,6 @@
 import type { LambdaDataSource } from '@aws-cdk/aws-appsync-alpha';
-import { errorMappingTemplate } from '../mappingTemplates';
+
+import { errorMappingTemplate } from '../mapping-templates';
 
 export default (coursesDataSource: LambdaDataSource) => {
   // * queries
