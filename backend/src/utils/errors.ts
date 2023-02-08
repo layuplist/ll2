@@ -2,6 +2,7 @@ import type { MiddlewareObj } from '@middy/core';
 import { v4 as uuid } from 'uuid';
 
 import type { AppSyncResponse } from 'utils/types';
+import { AppSyncResolverEvent } from 'aws-lambda';
 
 export class ItemAlreadyExistsError extends Error {
   constructor(key: Record<string, unknown>, tableName: string) {
@@ -33,7 +34,7 @@ export class EmptyUpdateError extends Error {
 }
 
 export const errorMiddleware = (): MiddlewareObj<
-  unknown,
+  AppSyncResolverEvent<unknown, unknown>,
   AppSyncResponse<unknown>
 > => ({
   onError: async (request) => {

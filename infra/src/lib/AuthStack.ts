@@ -1,0 +1,66 @@
+import type { Construct } from 'constructs';
+import { Stack, StackProps } from 'aws-cdk-lib';
+import { AccountRecovery, UserPool, UserPoolClient, CfnUserPoolGroup, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
+import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
+
+type AuthStackProps = StackProps;
+
+export class AuthStack extends Stack {
+  userPool: UserPool;
+  userPoolClient: UserPoolClient;
+  identityPool: IdentityPool;
+
+  constructor(scope: Construct, id: string, props: AuthStackProps) {
+    super(scope, id, props);
+
+    // cognito user pool
+
+    this.userPool = new UserPool(this, 'user-pool', {
+      userPoolName: 'user-pool',
+      selfSignUpEnabled: true,
+      accountRecovery: AccountRecovery.EMAIL_ONLY,
+      userVerification: {
+        emailStyle: VerificationEmailStyle.CODE
+      },
+      signInAliases: {
+        email: true
+      },
+      autoVerify: {
+        email: true
+      },
+      standardAttributes: {
+        email: {
+          required: true,
+          mutable: true
+        }
+      }
+    });
+    this.userPoolClient = new UserPoolClient(this, 'user-pool-client', {
+      userPoolClientName: 'user-pool-client',
+      userPool: this.userPool
+    });
+
+    // cognito identity pool
+
+    this.identityPool = new IdentityPool(this, 'identity-pool', {
+      identityPoolName: 'identity-pool',
+      allowUnauthenticatedIdentities: true,
+      authenticationProviders: {
+        userPools: [
+          new UserPoolAuthenticationProvider({
+            userPool: this.userPool,
+            userPoolClient: this.userPoolClient
+          })
+        ]
+      }
+    });
+
+    // user groups
+
+    new CfnUserPoolGroup(this, 'admin-group', {
+      userPoolId: this.userPool.userPoolId,
+      groupName: 'admin',
+      precedence: 0
+    });
+  }
+}

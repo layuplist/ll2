@@ -21,6 +21,10 @@ type Offering {
   """
   section: Int!
   """
+  Parent course.
+  """
+  course: Course!
+  """
   Primary professor.
   """
   professor: Professor!
@@ -62,14 +66,14 @@ input AddOfferingInput {
   number: Float!
   term: Int!
   section: Int!
-  professorEmail: String!
+  professorId: String!
   timeslot: String!
   title: String!
   description: String!
 }
 
 input UpdateOfferingInput {
-  professorEmail: String
+  professorId: String
   timeslot: String
   title: String
   description: String

@@ -23,14 +23,6 @@ export class InfraStack extends Stack {
         name: 'id',
         type: AttributeType.STRING
       }
-      // partitionKey: {
-      //   name: 'department',
-      //   type: AttributeType.STRING
-      // },
-      // sortKey: {
-      //   name: 'number',
-      //   type: AttributeType.NUMBER
-      // }
     });
 
     const offeringsTable = new Table(this, 'offerings-table', {

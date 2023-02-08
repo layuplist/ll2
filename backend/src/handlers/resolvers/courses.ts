@@ -21,15 +21,15 @@ console.assert(!!COURSES_TABLE, 'COURSES_TABLE is not defined in environment');
 
 // * resolvers
 
-const getCourse = async (args: QueryGetCourseArgs): Promise<Course | null> => {
+export const getCourse = async (args: QueryGetCourseArgs): Promise<Course> => {
   return await getItem(COURSES_TABLE, { id: args.id }) as Course;
 };
 
-const getCourses = async (args: QueryGetCoursesArgs): Promise<Course[]> => {
+export const getCourses = async (args: QueryGetCoursesArgs): Promise<Course[]> => {
   return (await getItems(COURSES_TABLE, args.ids.map(id => ({ id }))) ?? []) as Course[];
-}
+};
 
-const listCourses = async (args: QueryListCoursesArgs): Promise<Course[]> => {
+export const listCourses = async (args: QueryListCoursesArgs): Promise<Course[]> => {
   const { term, ...filter } = args.filter || {};
   return await listItems(
     COURSES_TABLE,
@@ -37,9 +37,9 @@ const listCourses = async (args: QueryListCoursesArgs): Promise<Course[]> => {
     // if filtering on term, use CONTAINS comparator
     key => key === 'terms' ? 'CONTAINS' : '='
   ) as Course[];
-}
+};
 
-const addCourse = async (args: MutationAddCourseArgs): Promise<MutationResponseWithId> => {
+export const addCourse = async (args: MutationAddCourseArgs): Promise<MutationResponseWithId> => {
   const id = generateCourseId(args.course);
 
   await addItem(
@@ -48,14 +48,15 @@ const addCourse = async (args: MutationAddCourseArgs): Promise<MutationResponseW
     {
       qualityScore: 0,
       layupScore: 0,
+      terms: [],
       ...args.course,
       id
     },
   );
   return { id, success: true };
-}
+};
 
-const updateCourse = async (args: MutationUpdateCourseArgs): Promise<MutationResponse> => {
+export const updateCourse = async (args: MutationUpdateCourseArgs): Promise<MutationResponse> => {
   await updateItem(
     COURSES_TABLE,
     { id: args.id },
@@ -68,7 +69,7 @@ const updateCourse = async (args: MutationUpdateCourseArgs): Promise<MutationRes
   return { success: true };
 };
 
-const deleteCourse = async (args: MutationDeleteCourseArgs): Promise<MutationResponse> => {
+export const deleteCourse = async (args: MutationDeleteCourseArgs): Promise<MutationResponse> => {
   await deleteItem(COURSES_TABLE, { id: args.id });
   return { success: true };
 };
@@ -76,28 +77,31 @@ const deleteCourse = async (args: MutationDeleteCourseArgs): Promise<MutationRes
 // * handler
 
 const handler = async (event:
-  | AppSyncEvent<'getCourse', QueryGetCourseArgs>
-  | AppSyncEvent<'getCourses', QueryGetCoursesArgs>
-  | AppSyncEvent<'listCourses', QueryListCoursesArgs>
-  | AppSyncEvent<'addCourse', MutationAddCourseArgs>
-  | AppSyncEvent<'updateCourse', MutationUpdateCourseArgs>
-  | AppSyncEvent<'deleteCourse', MutationDeleteCourseArgs>
+  | AppSyncEvent<'Query', 'getCourse', QueryGetCourseArgs>
+  | AppSyncEvent<'Query', 'getCourses', QueryGetCoursesArgs>
+  | AppSyncEvent<'Query', 'listCourses', QueryListCoursesArgs>
+  | AppSyncEvent<'Mutation', 'addCourse', MutationAddCourseArgs>
+  | AppSyncEvent<'Mutation', 'updateCourse', MutationUpdateCourseArgs>
+  | AppSyncEvent<'Mutation', 'deleteCourse', MutationDeleteCourseArgs>
+  | AppSyncEvent<'Offering', 'course', never, Course>
 ) => {
   console.debug('courses.handler received event:\n', event);
 
-  switch (event.info.fieldName) {
-    case 'getCourse':
+  switch (`${event.info.parentTypeName}.${event.info.fieldName}`) {
+    case 'Query.getCourse':
       return await getCourse(event.arguments as QueryGetCourseArgs);
-    case 'getCourses':
+    case 'Query.getCourses':
       return await getCourses(event.arguments as QueryGetCoursesArgs);
-    case 'listCourses':
+    case 'Query.listCourses':
       return await listCourses(event.arguments as QueryListCoursesArgs);
-    case 'addCourse':
+    case 'Mutation.addCourse':
       return await addCourse(event.arguments as MutationAddCourseArgs);
-    case 'updateCourse':
+    case 'Mutation.updateCourse':
       return await updateCourse(event.arguments as MutationUpdateCourseArgs);
-    case 'deleteCourse':
+    case 'Mutation.deleteCourse':
       return await deleteCourse(event.arguments as MutationDeleteCourseArgs);
+    case 'Offering.course':
+      return await getCourse({ id: generateCourseId(event.source) });
     default:
       return null;
   }

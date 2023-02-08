@@ -21,19 +21,19 @@ console.assert(!!REVIEWS_TABLE, 'REVIEWS_TABLE is not defined in environment');
 
 // * resolvers
 
-const getReview = async (args: QueryGetReviewArgs): Promise<Review | null> => {
+export const getReview = async (args: QueryGetReviewArgs): Promise<Review | null> => {
   return await getItem(REVIEWS_TABLE, { id: args.id }) as Review;
 };
 
-const getReviews = async (args: QueryGetReviewsArgs): Promise<Review[]> => {
+export const getReviews = async (args: QueryGetReviewsArgs): Promise<Review[]> => {
   return await getItems(REVIEWS_TABLE, args.ids.map(id => ({ id }))) as Review[];
 };
 
-const listReviews = async (args: QueryListReviewsArgs): Promise<Review[]> => {
+export const listReviews = async (args: QueryListReviewsArgs): Promise<Review[]> => {
   return (await listItems(REVIEWS_TABLE, args.filter ?? {}) ?? []) as Review[];
 };
 
-const addReview = async (args: MutationAddReviewArgs): Promise<MutationResponseWithId> => {
+export const addReview = async (args: MutationAddReviewArgs): Promise<MutationResponseWithId> => {
   const id = generateReviewId(args.review);
   // ! TODO - verify that args.review.userEmail matches signed in user
 
@@ -47,7 +47,7 @@ const addReview = async (args: MutationAddReviewArgs): Promise<MutationResponseW
   return { id, success: true };
 };
 
-const updateReview = async (args: MutationUpdateReviewArgs): Promise<MutationResponse> => {
+export const updateReview = async (args: MutationUpdateReviewArgs): Promise<MutationResponse> => {
   await updateItem(
     REVIEWS_TABLE,
     { id: args.id },
@@ -57,7 +57,7 @@ const updateReview = async (args: MutationUpdateReviewArgs): Promise<MutationRes
   return { success: true };
 };
 
-const deleteReview = async (args: MutationDeleteReviewArgs): Promise<MutationResponse> => {
+export const deleteReview = async (args: MutationDeleteReviewArgs): Promise<MutationResponse> => {
   await deleteItem(REVIEWS_TABLE, { id: args.id });
   return { success: true };
 };
@@ -65,27 +65,27 @@ const deleteReview = async (args: MutationDeleteReviewArgs): Promise<MutationRes
 // * handler
 
 const handler = async (event:
-  | AppSyncEvent<'getReview', QueryGetReviewArgs>
-  | AppSyncEvent<'getReviews', QueryGetReviewsArgs>
-  | AppSyncEvent<'listReviews', QueryListReviewsArgs>
-  | AppSyncEvent<'addReview', MutationAddReviewArgs>
-  | AppSyncEvent<'updateReview', MutationUpdateReviewArgs>
-  | AppSyncEvent<'deleteReview', MutationDeleteReviewArgs>
+  | AppSyncEvent<'Query', 'getReview', QueryGetReviewArgs>
+  | AppSyncEvent<'Query', 'getReviews', QueryGetReviewsArgs>
+  | AppSyncEvent<'Query', 'listReviews', QueryListReviewsArgs>
+  | AppSyncEvent<'Mutation', 'addReview', MutationAddReviewArgs>
+  | AppSyncEvent<'Mutation', 'updateReview', MutationUpdateReviewArgs>
+  | AppSyncEvent<'Mutation', 'deleteReview', MutationDeleteReviewArgs>
 ) => {
   console.debug('reviews.handler received event:\n', event);
 
-  switch (event.info.fieldName) {
-    case 'getReview':
+  switch (`${event.info.parentTypeName}.${event.info.fieldName}`) {
+    case 'Query.getReview':
       return await getReview(event.arguments as QueryGetReviewArgs);
-    case 'getReviews':
+    case 'Query.getReviews':
       return await getReviews(event.arguments as QueryGetReviewsArgs);
-    case 'listReviews':
+    case 'Query.listReviews':
       return await listReviews(event.arguments as QueryListReviewsArgs);
-    case 'addReview':
+    case 'Mutation.addReview':
       return await addReview(event.arguments as MutationAddReviewArgs);
-    case 'updateReview':
+    case 'Mutation.updateReview':
       return await updateReview(event.arguments as MutationUpdateReviewArgs);
-    case 'deleteReview':
+    case 'Mutation.deleteReview':
       return await deleteReview(event.arguments as MutationDeleteReviewArgs);
     default:
       return null;

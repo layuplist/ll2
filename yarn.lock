@@ -94,6 +94,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-cdk/aws-cognito-identitypool-alpha@npm:^2.63.2-alpha.0":
+  version: 2.63.2-alpha.0
+  resolution: "@aws-cdk/aws-cognito-identitypool-alpha@npm:2.63.2-alpha.0"
+  peerDependencies:
+    aws-cdk-lib: ^2.63.2
+    constructs: ^10.0.0
+  checksum: d8d6591464279ac5bd400291d369c8e66bfe3399ae1cef4a6962d828ebb01f84b7656991caef8ce935bae109914a47677f8e04b19f7a00a5467a5aa705cbe862
+  languageName: node
+  linkType: hard
+
 "@aws-crypto/ie11-detection@npm:^3.0.0":
   version: 3.0.0
   resolution: "@aws-crypto/ie11-detection@npm:3.0.0"
@@ -3000,6 +3010,7 @@ __metadata:
   dependencies:
     "@aws-cdk/aws-amplify-alpha": ^2.54.0-alpha.0
     "@aws-cdk/aws-appsync-alpha": ^2.55.1-alpha.0
+    "@aws-cdk/aws-cognito-identitypool-alpha": ^2.63.2-alpha.0
     "@jest/globals": ^29.3.1
     "@layuplist/schema": 1.0.0
     "@types/jest": ^29.2.4

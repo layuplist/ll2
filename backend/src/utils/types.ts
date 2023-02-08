@@ -1,8 +1,10 @@
-export type AppSyncEvent<TFieldName, TArgs> = {
+export type AppSyncEvent<TParentTypeName, TFieldName, TArgs, TSource=never> = {
   info: {
+    parentTypeName: TParentTypeName,
     fieldName: TFieldName
   },
   arguments: TArgs
+  source: TSource
 };
 
 export type KeyOf<TRecord> = keyof TRecord;

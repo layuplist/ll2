@@ -13,6 +13,10 @@ type MutationResponseWithId implements MutationResponse {
   success: Boolean!
 }
 
+# * DIRECTIVES
+
+directive @requireAdmin on FIELD_DEFINITION
+
 # * QUERIES
 
 type Query {

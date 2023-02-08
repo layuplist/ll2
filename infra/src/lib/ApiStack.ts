@@ -1,4 +1,5 @@
-import { Construct } from 'constructs';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { Construct } from 'constructs';
 import {
   AuthorizationType,
   FieldLogLevel,
@@ -20,7 +21,12 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { typeDefs } from '@layuplist/schema';
 
 import createCourseResolvers from '../utils/resolvers/courseResolvers';
+import createOfferingResolvers from '../utils/resolvers/offeringResolvers';
 import createReviewResolvers from '../utils/resolvers/reviewResolvers';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+
+const DEFAULT_LOG_RETENTION_DURATION = RetentionDays.ONE_MONTH;
 
 const SchemaString = (definition: string): ISchema => ({
   bind: (api: IGraphqlApi) => ({
@@ -30,6 +36,9 @@ const SchemaString = (definition: string): ISchema => ({
 });
 
 type ApiStackProps = StackProps & {
+  auth: {
+    userPool: UserPool
+  },
   tables: {
     courses: Table,
     offerings: Table,
@@ -50,21 +59,41 @@ export class ApiStack extends Stack {
       xrayEnabled: true,
       authorizationConfig: {
         defaultAuthorization: {
-          // TODO - REMOVE BEFORE LAUNCH
-          authorizationType: AuthorizationType.API_KEY,
-          apiKeyConfig: {
-            name: 'dev key',
-            description: 'temp key for dev use',
-            expires: Expiration.after(Duration.days(30))
+          authorizationType: AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool: props.auth.userPool
           }
-        }
+        },
+        additionalAuthorizationModes: [
+          {
+            authorizationType: AuthorizationType.API_KEY,
+            apiKeyConfig: {
+              name: 'dev key',
+              description: 'temp key for dev use',
+              expires: Expiration.after(Duration.days(30))
+            }
+          }
+        ]
       },
       logConfig: {
-        fieldLogLevel: FieldLogLevel.ALL
+        fieldLogLevel: FieldLogLevel.ALL,
+        retention: DEFAULT_LOG_RETENTION_DURATION
       }
     });
 
     // data sources
+
+    // some resolvers require access to tables other than their primary targets
+    // in order to execute necessary followup operations after mutations
+    const lambdaResolverEnvironment = {
+      COURSES_TABLE: props.tables.courses.tableName,
+      OFFERINGS_TABLE: props.tables.offerings.tableName,
+      REVIEWS_TABLE: props.tables.reviews.tableName,
+      PROFESSORS_TABLE: props.tables.professors.tableName
+    };
+    const grantFullAccessToAllTables = (lambda: IGrantable) => {
+      Object.values(props.tables).forEach(table => table.grantFullAccess(lambda));
+    };
 
     const coursesLambda = new Function(this, 'appsync-courses-resolver', {
       functionName: 'appsync-courses-resolver',
@@ -73,16 +102,31 @@ export class ApiStack extends Stack {
       code: Code.fromAsset('../backend/dist/handlers/resolvers/courses'),
       memorySize: 256,
       architecture: Architecture.ARM_64,
-      environment: {
-        COURSES_TABLE: props.tables.courses.tableName
-      }
+      environment: lambdaResolverEnvironment,
+      logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
-    props.tables.courses.grantFullAccess(coursesLambda);
+    grantFullAccessToAllTables(coursesLambda);
     const coursesDataSource = api.addLambdaDataSource(
       // appsync requires this to be in UpperCamel, so it is intentionally 
       // inconsistent with the rest of our resource naming
       'CoursesDataSource',
       coursesLambda
+    );
+
+    const offeringsLambda = new Function(this, 'appsync-offerings-resolver', {
+      functionName: 'appsync-offerings-resolver',
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'index.default',
+      code: Code.fromAsset('../backend/dist/handlers/resolvers/offerings'),
+      memorySize: 256,
+      architecture: Architecture.ARM_64,
+      environment: lambdaResolverEnvironment,
+      logRetention: DEFAULT_LOG_RETENTION_DURATION
+    });
+    grantFullAccessToAllTables(offeringsLambda);
+    const offeringsDataSource = api.addLambdaDataSource(
+      'OfferingsDataSource',
+      offeringsLambda
     );
 
     const reviewsLambda = new Function(this, 'appsync-reviews-resolver', {
@@ -92,11 +136,10 @@ export class ApiStack extends Stack {
       code: Code.fromAsset('../backend/dist/handlers/resolvers/reviews'),
       memorySize: 256,
       architecture: Architecture.ARM_64,
-      environment: {
-        REVIEWS_TABLE: props.tables.reviews.tableName
-      }
+      environment: lambdaResolverEnvironment,
+      logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
-    props.tables.reviews.grantFullAccess(reviewsLambda);
+    grantFullAccessToAllTables(reviewsLambda);
     const reviewsDataSource = api.addLambdaDataSource(
       'ReviewsDataSource',
       reviewsLambda
@@ -105,6 +148,7 @@ export class ApiStack extends Stack {
     // resolvers
 
     createCourseResolvers(coursesDataSource);
+    createOfferingResolvers(offeringsDataSource);
     createReviewResolvers(reviewsDataSource);
 
     // stream handlers
@@ -118,7 +162,8 @@ export class ApiStack extends Stack {
       architecture: Architecture.ARM_64,
       environment: {
         COURSES_TABLE: props.tables.courses.tableName
-      }
+      },
+      logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
     props.tables.courses.grantFullAccess(reviewStreamLambda);
     reviewStreamLambda.addEventSource(new DynamoEventSource(props.tables.reviews, {

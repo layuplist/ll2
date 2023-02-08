@@ -29,6 +29,10 @@ type Course {
   Instances of this course, these provide ties to professors, timeslots, reviews, etc.
   """
   offerings(term: Int): [Offering]
+  """
+  Terms offered (this field is also available via offerings, and is duplicated here to improve filter efficiency)
+  """
+  terms: [Int]!
 }
 
 type CourseGroup {
@@ -64,12 +68,14 @@ input AddCourseInput {
   xlist: CourseGroupInput
   qualityScore: Int = 0
   layupScore: Int = 0
+  terms: [Int]
 }
 
 input UpdateCourseInput {
   xlist: CourseGroupInput
   qualityScore: Int
   layupScore: Int
+  terms: [Int]
 }
 
 extend type Mutation {

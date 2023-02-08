@@ -22,6 +22,7 @@
   "dependencies": {
     "@aws-cdk/aws-amplify-alpha": "^2.54.0-alpha.0",
     "@aws-cdk/aws-appsync-alpha": "^2.55.1-alpha.0",
+    "@aws-cdk/aws-cognito-identitypool-alpha": "^2.63.2-alpha.0",
     "@layuplist/schema": "1.0.0",
     "aws-cdk-lib": "2.54.0",
     "constructs": "^10.0.0",
