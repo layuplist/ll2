@@ -33,6 +33,12 @@ input UpdateProfessorInput {
 
 extend type Mutation {
   addProfessor(professor: AddProfessorInput!): MutationResponseWithId!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
   updateProfessor(id: ID!, professor: UpdateProfessorInput!): MutationResponse!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
   deleteProfessor(id: ID!): MutationResponse!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
 }

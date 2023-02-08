@@ -80,6 +80,12 @@ input UpdateCourseInput {
 
 extend type Mutation {
   addCourse(course: AddCourseInput!): MutationResponseWithId!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
   updateCourse(id: ID!, course: UpdateCourseInput!): MutationResponse!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
   deleteCourse(id: ID!): MutationResponse!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
 }

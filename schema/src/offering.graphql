@@ -81,6 +81,12 @@ input UpdateOfferingInput {
 
 extend type Mutation {
   addOffering(offering: AddOfferingInput!): MutationResponseWithId!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
   updateOffering(id: ID!, offering: UpdateOfferingInput!): MutationResponse!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
   deleteOffering(id: ID!): MutationResponse!
+    @aws_api_key
+    @aws_cognito_user_pools(cognito_groups: ["admin"])
 }

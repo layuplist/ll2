@@ -1,6 +1,15 @@
 # * SCALARS
 
+# appsync
 scalar AWSDate
+scalar AWSTime
+scalar AWSDateTime
+scalar AWSTimestamp
+scalar AWSEmail
+scalar AWSJSON
+scalar AWSPhone
+scalar AWSURL
+scalar AWSIPAddress
 
 # * TYPES
 
@@ -12,10 +21,6 @@ type MutationResponseWithId implements MutationResponse {
   id: ID!
   success: Boolean!
 }
-
-# * DIRECTIVES
-
-directive @requireAdmin on FIELD_DEFINITION
 
 # * QUERIES
 
