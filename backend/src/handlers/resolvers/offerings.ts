@@ -14,7 +14,7 @@ import type {
   Course
 } from '@layuplist/schema';
 
-import type { AppSyncEvent } from 'utils/types';
+import type { AppSyncEvent, FieldResolverHandler } from 'utils/types';
 import { addItem, updateItem, deleteItem, getItem, getItems, listItems } from 'utils/dao';
 import { generateCourseId, generateOfferingId } from 'utils/misc';
 import { errorMiddleware, ItemNotFoundError } from 'utils/errors';
@@ -25,19 +25,19 @@ console.assert(!!OFFERINGS_TABLE, 'OFFERINGS_TABLE is not defined in environment
 
 // * resolvers
 
-export const getOffering = async (args: QueryGetOfferingArgs): Promise<Offering> => {
+export const getOffering: FieldResolverHandler<QueryGetOfferingArgs, Offering> = async (args) => {
   return await getItem(OFFERINGS_TABLE, { id: args.id }) as Offering;
 };
 
-export const getOfferings = async (args: QueryGetOfferingsArgs): Promise<Offering[]> => {
+export const getOfferings: FieldResolverHandler<QueryGetOfferingsArgs, Offering[]> = async (args) => {
   return (await getItems(OFFERINGS_TABLE, args.ids.map(id => ({ id }))) ?? []) as Offering[];
 };
 
-export const listOfferings = async (args: QueryListOfferingsArgs): Promise<Offering[]> => {
+export const listOfferings: FieldResolverHandler<QueryListOfferingsArgs, Offering[]> = async (args) => {
   return await listItems(OFFERINGS_TABLE, args.filter ?? {}) as Offering[];
 };
 
-export const addOffering = async (args: MutationAddOfferingArgs): Promise<MutationResponseWithId> => {
+export const addOffering: FieldResolverHandler<MutationAddOfferingArgs, MutationResponseWithId> = async (args) => {
   const id = generateOfferingId(args.offering);
 
   // add offering
@@ -82,7 +82,7 @@ export const addOffering = async (args: MutationAddOfferingArgs): Promise<Mutati
   return { id, success: true };
 };
 
-export const updateOffering = async (args: MutationUpdateOfferingArgs): Promise<MutationResponse> => {
+export const updateOffering: FieldResolverHandler<MutationUpdateOfferingArgs, MutationResponse> = async (args) => {
   // ! TODO - confirm professor exists
 
   await updateItem(
@@ -93,7 +93,7 @@ export const updateOffering = async (args: MutationUpdateOfferingArgs): Promise<
   return { success: true };
 };
 
-export const deleteOffering = async (args: MutationDeleteOfferingArgs): Promise<MutationResponse> => {
+export const deleteOffering: FieldResolverHandler<MutationDeleteOfferingArgs, MutationResponse> = async (args) => {
   await deleteItem(OFFERINGS_TABLE, { id: args.id });
   return { success: true };
 };

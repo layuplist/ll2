@@ -1,3 +1,5 @@
+import middy from '@middy/core';
+
 import type {
   MutationAddReviewArgs,
   MutationDeleteReviewArgs,
@@ -10,30 +12,29 @@ import type {
   Review
 } from '@layuplist/schema';
 
-import type { AppSyncEvent } from 'utils/types';
+import type { AppSyncEvent, FieldResolverHandler } from 'utils/types';
 import { addItem, deleteItem, getItem, getItems, listItems, updateItem } from 'utils/dao';
 import { generateReviewId } from 'utils/misc';
 import { errorMiddleware } from 'utils/errors';
-import middy from '@middy/core';
 
 const REVIEWS_TABLE = process.env.REVIEWS_TABLE!;
 console.assert(!!REVIEWS_TABLE, 'REVIEWS_TABLE is not defined in environment');
 
 // * resolvers
 
-export const getReview = async (args: QueryGetReviewArgs): Promise<Review | null> => {
+export const getReview: FieldResolverHandler<QueryGetReviewArgs, Review | null> = async (args) => {
   return await getItem(REVIEWS_TABLE, { id: args.id }) as Review;
 };
 
-export const getReviews = async (args: QueryGetReviewsArgs): Promise<Review[]> => {
+export const getReviews: FieldResolverHandler<QueryGetReviewsArgs, Review[]> = async (args) => {
   return await getItems(REVIEWS_TABLE, args.ids.map(id => ({ id }))) as Review[];
 };
 
-export const listReviews = async (args: QueryListReviewsArgs): Promise<Review[]> => {
+export const listReviews: FieldResolverHandler<QueryListReviewsArgs, Review[]> = async (args) => {
   return (await listItems(REVIEWS_TABLE, args.filter ?? {}) ?? []) as Review[];
 };
 
-export const addReview = async (args: MutationAddReviewArgs): Promise<MutationResponseWithId> => {
+export const addReview: FieldResolverHandler<MutationAddReviewArgs, MutationResponseWithId> = async (args) => {
   const id = generateReviewId(args.review);
   // ! TODO - verify that args.review.userEmail matches signed in user
 
@@ -47,7 +48,7 @@ export const addReview = async (args: MutationAddReviewArgs): Promise<MutationRe
   return { id, success: true };
 };
 
-export const updateReview = async (args: MutationUpdateReviewArgs): Promise<MutationResponse> => {
+export const updateReview: FieldResolverHandler<MutationUpdateReviewArgs, MutationResponse> = async (args) => {
   await updateItem(
     REVIEWS_TABLE,
     { id: args.id },
@@ -57,7 +58,7 @@ export const updateReview = async (args: MutationUpdateReviewArgs): Promise<Muta
   return { success: true };
 };
 
-export const deleteReview = async (args: MutationDeleteReviewArgs): Promise<MutationResponse> => {
+export const deleteReview: FieldResolverHandler<MutationDeleteReviewArgs, MutationResponse> = async (args) => {
   await deleteItem(REVIEWS_TABLE, { id: args.id });
   return { success: true };
 };

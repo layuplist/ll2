@@ -10,9 +10,12 @@ export type AppSyncEvent<TParentTypeName, TFieldName, TArgs, TSource=never> = {
 export type KeyOf<TRecord> = keyof TRecord;
 export type ValueOf<TRecord> = TRecord[keyof TRecord];
 
-export type AppSyncResponse<TResponse> = TResponse & {
+export type AppSyncResponse<TResult> = TResult & {
   error: {
     type: string,
     message: string
   };
 };
+
+export type FieldResolverHandler<TArgs, TResult> =
+  (args: TArgs) => Promise<TResult>;

@@ -1,3 +1,5 @@
+import middy from '@middy/core';
+
 import type {
   Course,
   MutationAddCourseArgs,
@@ -10,26 +12,25 @@ import type {
   QueryListCoursesArgs
 } from '@layuplist/schema';
 
-import type { AppSyncEvent } from 'utils/types';
+import type { AppSyncEvent, FieldResolverHandler } from 'utils/types';
 import { addItem, deleteItem, getItem, getItems, listItems, updateItem } from 'utils/dao';
 import { generateCourseId } from 'utils/misc';
 import { errorMiddleware } from 'utils/errors';
-import middy from '@middy/core';
 
 const COURSES_TABLE = process.env.COURSES_TABLE!;
 console.assert(!!COURSES_TABLE, 'COURSES_TABLE is not defined in environment');
 
 // * resolvers
 
-export const getCourse = async (args: QueryGetCourseArgs): Promise<Course> => {
+export const getCourse: FieldResolverHandler<QueryGetCourseArgs, Course> = async (args) => {
   return await getItem(COURSES_TABLE, { id: args.id }) as Course;
 };
 
-export const getCourses = async (args: QueryGetCoursesArgs): Promise<Course[]> => {
+export const getCourses: FieldResolverHandler<QueryGetCoursesArgs, Course[]> = async (args) => {
   return (await getItems(COURSES_TABLE, args.ids.map(id => ({ id }))) ?? []) as Course[];
 };
 
-export const listCourses = async (args: QueryListCoursesArgs): Promise<Course[]> => {
+export const listCourses: FieldResolverHandler<QueryListCoursesArgs, Course[]> = async (args) => {
   const { term, ...filter } = args.filter || {};
   return await listItems(
     COURSES_TABLE,
@@ -39,7 +40,7 @@ export const listCourses = async (args: QueryListCoursesArgs): Promise<Course[]>
   ) as Course[];
 };
 
-export const addCourse = async (args: MutationAddCourseArgs): Promise<MutationResponseWithId> => {
+export const addCourse: FieldResolverHandler<MutationAddCourseArgs, MutationResponseWithId> = async (args) => {
   const id = generateCourseId(args.course);
 
   await addItem(
@@ -56,7 +57,7 @@ export const addCourse = async (args: MutationAddCourseArgs): Promise<MutationRe
   return { id, success: true };
 };
 
-export const updateCourse = async (args: MutationUpdateCourseArgs): Promise<MutationResponse> => {
+export const updateCourse: FieldResolverHandler<MutationUpdateCourseArgs, MutationResponse> = async (args) => {
   await updateItem(
     COURSES_TABLE,
     { id: args.id },
@@ -69,7 +70,7 @@ export const updateCourse = async (args: MutationUpdateCourseArgs): Promise<Muta
   return { success: true };
 };
 
-export const deleteCourse = async (args: MutationDeleteCourseArgs): Promise<MutationResponse> => {
+export const deleteCourse: FieldResolverHandler<MutationDeleteCourseArgs, MutationResponse> = async (args) => {
   await deleteItem(COURSES_TABLE, { id: args.id });
   return { success: true };
 };
