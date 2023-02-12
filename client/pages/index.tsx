@@ -1,8 +1,24 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import { useQuery, gql } from '@apollo/client';
+
 import styles from '../styles/Home.module.css'
 
+const LIST_COURSES = gql`
+  query ListAllCourses {
+    listCourses {
+      id
+      offerings {
+        id
+      }
+    }
+  }
+`;
+
 export default function Home() {
+  const { loading, data, error } = useQuery(LIST_COURSES);
+  console.log(loading, data, error);
+
   return (
     <div className={styles.container}>
       <Head>

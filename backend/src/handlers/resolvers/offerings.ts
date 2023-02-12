@@ -9,7 +9,9 @@ import type {
   MutationUpdateOfferingArgs,
   QueryGetOfferingArgs,
   QueryGetOfferingsArgs,
-  QueryListOfferingsArgs
+  QueryListOfferingsArgs,
+  CourseOfferingsArgs,
+  Course
 } from '@layuplist/schema';
 
 import type { AppSyncEvent } from 'utils/types';
@@ -105,6 +107,7 @@ const handler = async (event:
   | AppSyncEvent<'Mutation', 'addOffering', MutationAddOfferingArgs>
   | AppSyncEvent<'Mutation', 'updateOffering', MutationUpdateOfferingArgs>
   | AppSyncEvent<'Mutation', 'deleteOffering', MutationDeleteOfferingArgs>
+  | AppSyncEvent<'Course', 'offerings', MutationDeleteOfferingArgs>
 ) => {
   console.debug('offerings.handler received event:\n', event);
 
@@ -119,8 +122,14 @@ const handler = async (event:
       return await addOffering(event.arguments as MutationAddOfferingArgs);
     case 'Mutation.updateOffering':
       return await updateOffering(event.arguments as MutationUpdateOfferingArgs);
-    case 'Mutation.deleteOffering':
-      return await deleteOffering(event.arguments as MutationDeleteOfferingArgs);
+    case 'Course.offerings':
+      return await listOfferings({
+        filter: {
+          department: (event.source as Course).department,
+          number: (event.source as Course).number,
+          term: (event.arguments as CourseOfferingsArgs).term
+        }
+      })
     default:
       return null;
   }

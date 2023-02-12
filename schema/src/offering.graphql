@@ -3,7 +3,8 @@
 """
 An instance of a course, tied to a specific term and section.
 """
-type Offering {
+type Offering @aws_iam @aws_api_key {
+  id: ID!
   """
   Offering department.
   """
@@ -55,8 +56,10 @@ input OfferingFilterInput {
 
 extend type Query {
   getOffering(id: ID!): Offering
+    @aws_iam
   getOfferings(ids: [ID!]!): [Offering]!
   listOfferings(filter: OfferingFilterInput): [Offering]!
+    @aws_iam
 }
 
 # * MUTATIONS
@@ -81,12 +84,6 @@ input UpdateOfferingInput {
 
 extend type Mutation {
   addOffering(offering: AddOfferingInput!): MutationResponseWithId!
-    @aws_api_key
-    @aws_cognito_user_pools(cognito_groups: ["admin"])
   updateOffering(id: ID!, offering: UpdateOfferingInput!): MutationResponse!
-    @aws_api_key
-    @aws_cognito_user_pools(cognito_groups: ["admin"])
   deleteOffering(id: ID!): MutationResponse!
-    @aws_api_key
-    @aws_cognito_user_pools(cognito_groups: ["admin"])
 }

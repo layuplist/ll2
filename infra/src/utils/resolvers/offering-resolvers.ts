@@ -21,6 +21,12 @@ export default (offeringsDataSource: LambdaDataSource) => {
     responseMappingTemplate: errorMappingTemplate
   });
 
+  offeringsDataSource.createResolver('query-course-offerings-resolver', {
+    typeName: 'Course',
+    fieldName: 'offerings',
+    responseMappingTemplate: errorMappingTemplate
+  });
+
   // * mutations
 
   offeringsDataSource.createResolver('mutation-addOffering-resolver', {

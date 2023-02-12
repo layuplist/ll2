@@ -1,6 +1,6 @@
 # * TYPES
 
-type Professor {
+type Professor @aws_iam @aws_api_key {
   id: ID!
   name: String!
   departments: [String!]
@@ -15,8 +15,10 @@ input ProfessorFilterInput {
 
 extend type Query {
   getProfessor(id: ID!): Professor
+    @aws_iam
   getProfessors(ids: [ID!]!): [Professor]!
   listProfessors(filter: ProfessorFilterInput): [Professor]!
+    @aws_iam
 }
 
 # * MUTATIONS
@@ -33,12 +35,6 @@ input UpdateProfessorInput {
 
 extend type Mutation {
   addProfessor(professor: AddProfessorInput!): MutationResponseWithId!
-    @aws_api_key
-    @aws_cognito_user_pools(cognito_groups: ["admin"])
   updateProfessor(id: ID!, professor: UpdateProfessorInput!): MutationResponse!
-    @aws_api_key
-    @aws_cognito_user_pools(cognito_groups: ["admin"])
   deleteProfessor(id: ID!): MutationResponse!
-    @aws_api_key
-    @aws_cognito_user_pools(cognito_groups: ["admin"])
 }

@@ -17,14 +17,15 @@ import {
 import { Architecture, Code, Function, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 import { typeDefs } from '@layuplist/schema';
 
 import createCourseResolvers from '../utils/resolvers/course-resolvers';
 import createOfferingResolvers from '../utils/resolvers/offering-resolvers';
 import createReviewResolvers from '../utils/resolvers/review-resolvers';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 const DEFAULT_LOG_RETENTION_DURATION = RetentionDays.ONE_MONTH;
 
@@ -37,7 +38,8 @@ const SchemaString = (definition: string): ISchema => ({
 
 type ApiStackProps = StackProps & {
   auth: {
-    userPool: UserPool
+    userPool: UserPool,
+    userPoolClient: UserPoolClient
   },
   tables: {
     courses: Table,
@@ -48,12 +50,14 @@ type ApiStackProps = StackProps & {
 }
 
 export class ApiStack extends Stack {
+  api: GraphqlApi;
+
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
     // gql api
 
-    const api = new GraphqlApi(this, 'graphql-api', {
+    this.api = new GraphqlApi(this, 'graphql-api', {
       name: 'graphql-api',
       schema: SchemaString(typeDefs),
       xrayEnabled: true,
@@ -72,6 +76,9 @@ export class ApiStack extends Stack {
               description: 'temp key for dev use',
               expires: Expiration.after(Duration.days(30))
             }
+          },
+          {
+            authorizationType: AuthorizationType.IAM,
           }
         ]
       },
@@ -80,6 +87,30 @@ export class ApiStack extends Stack {
         retention: DEFAULT_LOG_RETENTION_DURATION
       }
     });
+
+    // allow public (unauthenticated) access to several queries
+    // create identity pool for unauthenticated role
+    const identityPool = new IdentityPool(this, 'identity-pool', {
+      identityPoolName: 'identity-pool',
+      allowUnauthenticatedIdentities: true,
+      authenticationProviders: {
+        userPools: [
+          new UserPoolAuthenticationProvider({
+            userPool: props.auth.userPool,
+            userPoolClient: props.auth.userPoolClient
+          })
+        ]
+      }
+    });
+    // grant role access to public queries
+    this.api.grantQuery(identityPool.unauthenticatedRole, ...[
+      'getCourse',
+      'listCourses',
+      'getOffering',
+      'listOfferings',
+      'getReview',
+      'listReviews'
+    ]);
 
     // data sources
 
@@ -106,7 +137,7 @@ export class ApiStack extends Stack {
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
     grantFullAccessToAllTables(coursesLambda);
-    const coursesDataSource = api.addLambdaDataSource(
+    const coursesDataSource = this.api.addLambdaDataSource(
       // appsync requires this to be in UpperCamel, so it is intentionally 
       // inconsistent with the rest of our resource naming
       'CoursesDataSource',
@@ -124,7 +155,7 @@ export class ApiStack extends Stack {
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
     grantFullAccessToAllTables(offeringsLambda);
-    const offeringsDataSource = api.addLambdaDataSource(
+    const offeringsDataSource = this.api.addLambdaDataSource(
       'OfferingsDataSource',
       offeringsLambda
     );
@@ -140,7 +171,7 @@ export class ApiStack extends Stack {
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
     grantFullAccessToAllTables(reviewsLambda);
-    const reviewsDataSource = api.addLambdaDataSource(
+    const reviewsDataSource = this.api.addLambdaDataSource(
       'ReviewsDataSource',
       reviewsLambda
     );
@@ -173,10 +204,10 @@ export class ApiStack extends Stack {
     // outputs
 
     new CfnOutput(this, 'graphql-api-url', {
-      value: api.graphqlUrl
+      value: this.api.graphqlUrl
     });
     new CfnOutput(this, 'graphql-api-key', {
-      value: api.apiKey as string
+      value: this.api.apiKey as string
     });
   }
 }

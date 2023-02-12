@@ -1,5 +1,7 @@
 # https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/547#issuecomment-610671519
 
+# * DIRECTIVES
+
 """This directive allows results to be deferred during execution"""
 directive @defer on FIELD
 
@@ -50,3 +52,15 @@ directive @aws_iam on OBJECT | FIELD_DEFINITION
 Tells the service this field/object has access authorized by an API key.
 """
 directive @aws_api_key on OBJECT | FIELD_DEFINITION
+
+# * SCALARS
+
+scalar AWSDate
+scalar AWSTime
+scalar AWSDateTime
+scalar AWSTimestamp
+scalar AWSEmail
+scalar AWSJSON
+scalar AWSPhone
+scalar AWSURL
+scalar AWSIPAddress

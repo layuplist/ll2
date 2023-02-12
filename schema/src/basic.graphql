@@ -1,16 +1,3 @@
-# * SCALARS
-
-# appsync
-scalar AWSDate
-scalar AWSTime
-scalar AWSDateTime
-scalar AWSTimestamp
-scalar AWSEmail
-scalar AWSJSON
-scalar AWSPhone
-scalar AWSURL
-scalar AWSIPAddress
-
 # * TYPES
 
 interface MutationResponse {
@@ -24,12 +11,14 @@ type MutationResponseWithId implements MutationResponse {
 
 # * QUERIES
 
-type Query {
+# queries default to requiring admin permissions
+type Query @aws_cognito_user_pools(cognito_groups: ["admin"]) {
   _: Boolean # stub
 }
 
 # * MUTATIONS
 
-type Mutation {
+# mutations default to requiring admin permissions, or api_key
+type Mutation @aws_cognito_user_pools(cognito_groups: ["admin"]) {
   _: Boolean # stub
 }

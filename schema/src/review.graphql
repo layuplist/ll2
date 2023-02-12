@@ -1,6 +1,7 @@
 # * TYPES
 
-type Review {
+type Review @aws_iam @aws_api_key {
+  id: ID!
   """
   Offering department.
   """
@@ -47,8 +48,10 @@ input ReviewFilterInput {
 
 extend type Query {
   getReview(id: ID!): Review
+    @aws_iam
   getReviews(ids: [ID!]!): [Review]!
   listReviews(filter: ReviewFilterInput): [Review]!
+    @aws_iam
 }
 
 # * MUTATIONS
@@ -70,8 +73,12 @@ input UpdateReviewInput {
   comment: String
 }
 
+# review mutations are accessible to students
 extend type Mutation {
   addReview(review: AddReviewInput!): MutationResponseWithId!
+    @aws_cognito_user_pools(cognito_groups: ["student"])
   updateReview(id: ID!, review: UpdateReviewInput!): MutationResponse!
+    @aws_cognito_user_pools(cognito_groups: ["student"])
   deleteReview(id: ID!): MutationResponse!
+    @aws_cognito_user_pools(cognito_groups: ["student"])
 }

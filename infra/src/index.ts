@@ -34,7 +34,10 @@ const auth = new AuthStack(app, 'auth-stack', {
 });
 const data = new ApiStack(app, 'api-stack', {
   env,
-  auth: { userPool: auth.userPool },
+  auth: {
+    userPool: auth.userPool,
+    userPoolClient: auth.userPoolClient
+  },
   tables: infra.tables
 });
 

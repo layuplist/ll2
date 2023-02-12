@@ -4,7 +4,7 @@
   "repository": "https://github.com/layuplist/ll2",
   "author": "dplanner-dev",
   "license": "MIT",
-  "main": "dist/types.ts",
+  "main": "./dist/types.ts",
   "scripts": {
     "dev": "graphql-codegen --config codegen.yml --watch",
     "build": "graphql-codegen --config codegen.yml"
