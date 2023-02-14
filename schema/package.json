@@ -14,8 +14,10 @@
     "@graphql-codegen/add": "^3.2.3",
     "@graphql-codegen/cli": "^2.16.1",
     "@graphql-codegen/introspection": "^2.2.3",
-    "@graphql-codegen/schema-ast": "^2.6.0",
+    "@graphql-codegen/plugin-helpers": "^4.0.0",
+    "@graphql-codegen/schema-ast": "^3.0.0",
     "@graphql-codegen/typescript": "^2.8.5",
+    "@graphql-tools/utils": "^9.2.1",
     "@types/node": "^18.11.19"
   },
   "dependencies": {

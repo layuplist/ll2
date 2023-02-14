@@ -8,7 +8,7 @@ generates:
       - 'typescript'
       - add:
           placement: 'content'
-          content: 'export const typeDefs = `'
+          content: 'export const schema = `'
       - schema-ast
       - add:
           placement: 'append'
@@ -17,8 +17,11 @@ generates:
       declarationKind: 'type'
       maybeValue: 'T | undefined'
       namingConvention: change-case-all#pascalCase
-  dist/graphql.schema.json:
+  dist/schema.json:
     plugins:
       - 'introspection'
     config:
       minify: true
+  dist/schema.graphql:
+    plugins:
+      - './plugins/cascade-custom-auth.cjs'

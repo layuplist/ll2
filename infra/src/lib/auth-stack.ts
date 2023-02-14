@@ -1,12 +1,22 @@
 import type { Construct } from 'constructs';
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { AccountRecovery, UserPool, UserPoolClient, CfnUserPoolGroup, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import {
+  AccountRecovery,
+  UserPool,
+  UserPoolClient,
+  CfnUserPoolGroup,
+  VerificationEmailStyle
+} from 'aws-cdk-lib/aws-cognito';
+import {
+  Role, ServicePrincipal, UnknownPrincipal, User
+} from 'aws-cdk-lib/aws-iam';
 
 type AuthStackProps = StackProps;
 
 export class AuthStack extends Stack {
   userPool: UserPool;
   userPoolClient: UserPoolClient;
+  adminRole: Role;
 
   constructor(scope: Construct, id: string, props: AuthStackProps) {
     super(scope, id, props);

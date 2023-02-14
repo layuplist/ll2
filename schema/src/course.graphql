@@ -14,6 +14,10 @@ type Course @aws_iam @aws_api_key {
   """
   number: Float!
   """
+  ORC URL.
+  """
+  url: String
+  """
   Connection to crosslisted courses.
   """
   xlist: CourseGroup
@@ -88,6 +92,12 @@ input UpdateCourseInput {
 
 extend type Mutation {
   addCourse(course: AddCourseInput!): MutationResponseWithId!
+    @aws_api_key
+    @aws_iam
   updateCourse(id: ID!, course: UpdateCourseInput!): MutationResponse!
+    @aws_api_key
+    @aws_iam
   deleteCourse(id: ID!): MutationResponse!
+    @aws_api_key
+    @aws_iam
 }

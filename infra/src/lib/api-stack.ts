@@ -20,7 +20,7 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
-import { typeDefs } from '@layuplist/schema';
+import { schema } from '@layuplist/schema';
 
 import createCourseResolvers from '../utils/resolvers/course-resolvers';
 import createOfferingResolvers from '../utils/resolvers/offering-resolvers';
@@ -59,7 +59,7 @@ export class ApiStack extends Stack {
 
     this.api = new GraphqlApi(this, 'graphql-api', {
       name: 'graphql-api',
-      schema: SchemaString(typeDefs),
+      schema: SchemaString(schema),
       xrayEnabled: true,
       authorizationConfig: {
         defaultAuthorization: {
@@ -102,7 +102,7 @@ export class ApiStack extends Stack {
         ]
       }
     });
-    // grant role access to public queries
+    // grant unauthed role access to public queries
     this.api.grantQuery(identityPool.unauthenticatedRole, ...[
       'getCourse',
       'listCourses',
@@ -111,6 +111,8 @@ export class ApiStack extends Stack {
       'getReview',
       'listReviews'
     ]);
+
+    this.api.grant
 
     // data sources
 

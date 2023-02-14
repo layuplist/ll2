@@ -3901,7 +3901,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-codegen/schema-ast@npm:^2.6.0, @graphql-codegen/schema-ast@npm:^2.6.1":
+"@graphql-codegen/plugin-helpers@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@graphql-codegen/plugin-helpers@npm:4.0.0"
+  dependencies:
+    "@graphql-tools/utils": ^9.0.0
+    change-case-all: 1.0.15
+    common-tags: 1.8.2
+    import-from: 4.0.0
+    lodash: ~4.17.0
+    tslib: ~2.4.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: c58fb7b64e8cf705c52293f4260de6ed2d9dfbab297f5e256901e800dc92fe299e13706b027ce05521f00792aaca6265de9e0f3f6297693ec1c8c7ea49887018
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/schema-ast@npm:^2.6.1":
   version: 2.6.1
   resolution: "@graphql-codegen/schema-ast@npm:2.6.1"
   dependencies:
@@ -3911,6 +3927,19 @@ __metadata:
   peerDependencies:
     graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
   checksum: f44338ac66e6a1f6238c33cdf65778bb467fe5a93767988135cb4e112d3be4d3c7e8aeeffe323754e8d6b0cbc5a52cb71452bfc42a15bc7031ebaa9b3d5da676
+  languageName: node
+  linkType: hard
+
+"@graphql-codegen/schema-ast@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@graphql-codegen/schema-ast@npm:3.0.0"
+  dependencies:
+    "@graphql-codegen/plugin-helpers": ^4.0.0
+    "@graphql-tools/utils": ^9.0.0
+    tslib: ~2.4.0
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 834a698cfec7d59b0700a7385811e15591999b0ceb728cb3a38a73a2bd695771b38e4977df21e2d832075e8aecffd69649cc2412ebbccad53b16025f0f818834
   languageName: node
   linkType: hard
 
@@ -4721,10 +4750,25 @@ __metadata:
     "@graphql-codegen/add": ^3.2.3
     "@graphql-codegen/cli": ^2.16.1
     "@graphql-codegen/introspection": ^2.2.3
-    "@graphql-codegen/schema-ast": ^2.6.0
+    "@graphql-codegen/plugin-helpers": ^4.0.0
+    "@graphql-codegen/schema-ast": ^3.0.0
     "@graphql-codegen/typescript": ^2.8.5
+    "@graphql-tools/utils": ^9.2.1
     "@types/node": ^18.11.19
     graphql: ^16.6.0
+  languageName: unknown
+  linkType: soft
+
+"@layuplist/scripts@workspace:scripts":
+  version: 0.0.0-use.local
+  resolution: "@layuplist/scripts@workspace:scripts"
+  dependencies:
+    "@apollo/client": ^3.7.7
+    cross-fetch: ^3.1.5
+    csv-parser: ^3.0.0
+    dotenv: ^16.0.3
+    graphql: ^16.6.0
+    ts-node: ^10.9.1
   languageName: unknown
   linkType: soft
 
@@ -6870,6 +6914,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csv-parser@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "csv-parser@npm:3.0.0"
+  dependencies:
+    minimist: ^1.2.0
+  bin:
+    csv-parser: bin/csv-parser
+  checksum: adc9d67d9f185249825570778c24d13004625301655330f6b735a052b9fdfbe1a239a014afb1f89939e0626ee573718f71f9f14164db7c17e4bcb2f38d6a162b
+  languageName: node
+  linkType: hard
+
 "damerau-levenshtein@npm:^1.0.8":
   version: 1.0.8
   resolution: "damerau-levenshtein@npm:1.0.8"
@@ -7093,7 +7148,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.0.0":
+"dotenv@npm:^16.0.0, dotenv@npm:^16.0.3":
   version: 16.0.3
   resolution: "dotenv@npm:16.0.3"
   checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8

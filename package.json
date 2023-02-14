@@ -8,7 +8,8 @@
     "schema",
     "backend",
     "client",
-    "infra"
+    "infra",
+    "scripts"
   ],
   "private": true,
   "scripts": {

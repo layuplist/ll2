@@ -6,7 +6,7 @@ An instance of a course, tied to a specific term and section.
 type Offering @aws_iam @aws_api_key {
   id: ID!
   """
-  Offering department.
+  Course department.
   """
   department: String!
   """

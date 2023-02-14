@@ -1,3 +1,7 @@
+# * DIRECTIVES
+
+directive @auth on OBJECT | FIELD_DEFINITION
+
 # * TYPES
 
 interface MutationResponse {
@@ -12,7 +16,7 @@ type MutationResponseWithId implements MutationResponse {
 # * QUERIES
 
 # queries default to requiring admin permissions
-type Query @aws_cognito_user_pools(cognito_groups: ["admin"]) {
+type Query @auth @aws_cognito_user_pools(cognito_groups: ["admin"]) {
   _: Boolean # stub
 }
 
