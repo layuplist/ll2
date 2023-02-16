@@ -42,7 +42,6 @@ module.exports = {
 
     const appsyncAuthTranslationVisitor = (nodeConfig) => {
       const authDirective = getDirective(schemaWithCascadedAuth, nodeConfig, 'auth')?.[0];
-      console.log(authDirective);
       if (authDirective) {
         const { cognito_groups, allow_api_key, allow_iam } = authDirective;
 
@@ -56,8 +55,6 @@ module.exports = {
         if (allow_iam) appsyncDirectives.push(
           makeDirectiveNode('aws_iam')
         );
-
-        console.log(appsyncDirectives);
 
         nodeConfig.astNode.directives = [
           ...nodeConfig.astNode.directives.filter(d => d.name.value !== 'auth'),
