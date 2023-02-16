@@ -1,6 +1,10 @@
 # * TYPES
 
-type Professor @aws_iam @aws_api_key {
+type Professor @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   id: ID!
   name: String!
   departments: [String!]
@@ -15,10 +19,8 @@ input ProfessorFilterInput {
 
 extend type Query {
   getProfessor(id: ID!): Professor
-    @aws_iam
   getProfessors(ids: [ID!]!): [Professor]!
   listProfessors(filter: ProfessorFilterInput): [Professor]!
-    @aws_iam
 }
 
 # * MUTATIONS

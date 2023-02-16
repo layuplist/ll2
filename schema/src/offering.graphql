@@ -3,7 +3,11 @@
 """
 An instance of a course, tied to a specific term and section.
 """
-type Offering @aws_iam @aws_api_key {
+type Offering @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   id: ID!
   """
   Course department.
@@ -56,10 +60,8 @@ input OfferingFilterInput {
 
 extend type Query {
   getOffering(id: ID!): Offering
-    @aws_iam
   getOfferings(ids: [ID!]!): [Offering]!
   listOfferings(filter: OfferingFilterInput): [Offering]!
-    @aws_iam
 }
 
 # * MUTATIONS

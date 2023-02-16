@@ -1,6 +1,10 @@
 # * TYPES
 
-type User {
+type User @auth(
+  cognito_groups: ["admin"],
+  allow_api_key: false,
+  allow_iam: true
+) {
   email: String!
   reviews: [Review!]
 }

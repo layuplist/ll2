@@ -3,7 +3,11 @@
 """
 A course, denoted by a combination of department and number.
 """
-type Course @aws_iam @aws_api_key {
+type Course @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   id: ID!
   """
   Offering department.
@@ -39,7 +43,11 @@ type Course @aws_iam @aws_api_key {
   terms: [Int]!
 }
 
-type CourseGroup @aws_api_key {
+type CourseGroup @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   """
   Crosslisted courses.
   """
@@ -55,17 +63,9 @@ input CourseFilterInput {
 }
 
 extend type Query {
-  getCourse(id: ID!): Course
-    @aws_cognito_user_pools(cognito_groups: ["student"])
-    @aws_api_key
-    @aws_iam
+  getCourse(id: ID!): Course @auth(cognito_groups: ["student"])
   getCourses(ids: [ID!]!): [Course]!
-    @aws_api_key
-    @aws_iam
   listCourses(filter: CourseFilterInput, sortBy: String): [Course]!
-    @aws_cognito_user_pools(cognito_groups: ["student"])
-    @aws_api_key
-    @aws_iam
 }
 
 # * MUTATIONS
@@ -92,12 +92,6 @@ input UpdateCourseInput {
 
 extend type Mutation {
   addCourse(course: AddCourseInput!): MutationResponseWithId!
-    @aws_api_key
-    @aws_iam
   updateCourse(id: ID!, course: UpdateCourseInput!): MutationResponse!
-    @aws_api_key
-    @aws_iam
   deleteCourse(id: ID!): MutationResponse!
-    @aws_api_key
-    @aws_iam
 }

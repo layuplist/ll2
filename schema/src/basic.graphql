@@ -1,6 +1,10 @@
 # * DIRECTIVES
 
-directive @auth on OBJECT | FIELD_DEFINITION
+directive @auth(
+  cognito_groups: [String!]
+  allow_api_key: Boolean
+  allow_iam: Boolean
+) on OBJECT | FIELD_DEFINITION
 
 # * TYPES
 
@@ -8,21 +12,34 @@ interface MutationResponse {
   success: Boolean!
 }
 
-type MutationResponseWithId implements MutationResponse {
+type MutationResponseWithId implements MutationResponse @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   id: ID!
   success: Boolean!
 }
 
 # * QUERIES
 
-# queries default to requiring admin permissions
-type Query @auth @aws_cognito_user_pools(cognito_groups: ["admin"]) {
+# queries default to requiring student group, api_key, or iam for public access
+# (public access scoped by cdk api.grantQuery)
+type Query @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   _: Boolean # stub
 }
 
 # * MUTATIONS
 
-# mutations default to requiring admin permissions, or api_key
-type Mutation @aws_cognito_user_pools(cognito_groups: ["admin"]) {
+# mutations default to requiring admin group, or iam
+type Mutation @auth(
+  cognito_groups: ["admin"],
+  allow_api_key: false,
+  allow_iam: true
+) {
   _: Boolean # stub
 }

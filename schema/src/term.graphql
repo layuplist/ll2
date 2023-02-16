@@ -1,6 +1,10 @@
 # * TYPES
 
-type Term {
+type Term @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
   code: Int!
   start: AWSDate!
   end: AWSDate!

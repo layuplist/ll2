@@ -1,45 +1,81 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
-const { getCachedDocumentNodeFromSchema } = require('@graphql-codegen/plugin-helpers');
-const { visit, buildASTSchema } = require('graphql');
-const { printSchemaWithDirectives } = require('@graphql-tools/utils');
+const { printSchemaWithDirectives, mapSchema, getDirective, MapperKind, makeDirectiveNode } = require('@graphql-tools/utils');
 
 module.exports = {
   plugin(schema) {
-    const astNode = getCachedDocumentNodeFromSchema(schema);
-
     const backpointers = {};
-    const visitor = (node) => {
-      const { name, kind, fields, directives } = node;
-      const authDirective = directives.find(d => d?.name.value === 'auth');
+    const cascadeAuthVisitor = (nodeConfig) => {
+      const name = nodeConfig.astNode.name.value;
+      const kind = nodeConfig.astNode.kind;
+      const authDirective = getDirective(schema, nodeConfig, 'auth')?.[0];
+      const parentAuthDirective = backpointers[name]?.authDirective;
 
-      // if object type def, loop through children, cascade auth
       if (kind === 'ObjectTypeDefinition') {
-        fields.forEach(field => {
-          const fieldName = field?.name.value;
-
+        Object.keys(nodeConfig.getFields()).forEach(fieldName => {
           backpointers[fieldName] = {
-            parent: name.value,
-            authDirective: authDirective || backpointers[name]?.authDirective
+            parent: name,
+            authDirective: authDirective || parentAuthDirective
           };
         });
       }
 
-      if (!authDirective && backpointers[name.value]?.authDirective) {
-        return {
-          ...node,
-          directives: [
-            ...directives,
-            backpointers[name.value]?.authDirective
-          ]
-        };
+      if (!authDirective && parentAuthDirective) {
+        nodeConfig.astNode.directives.push(makeDirectiveNode('auth', parentAuthDirective));
+      } else {
+        nodeConfig.astNode.directives = [
+          ...nodeConfig.astNode.directives.filter(d => d.name.value !== 'auth'),
+          makeDirectiveNode('auth', { ...parentAuthDirective, ...authDirective })
+        ];
       }
+
+      return nodeConfig;
     };
-    const result = visit(astNode, {
-      FieldDefinition: visitor,
-      ObjectTypeDefinition: visitor
+    const schemaWithCascadedAuth = mapSchema(schema, {
+      [MapperKind.OBJECT_TYPE](objectTypeConfig) {
+        return cascadeAuthVisitor(objectTypeConfig);
+      },
+      [MapperKind.OBJECT_FIELD](objectFieldConfig) {
+        return cascadeAuthVisitor(objectFieldConfig);
+      }
     });
 
-    return printSchemaWithDirectives(buildASTSchema(result));
+    const appsyncAuthTranslationVisitor = (nodeConfig) => {
+      const authDirective = getDirective(schemaWithCascadedAuth, nodeConfig, 'auth')?.[0];
+      console.log(authDirective);
+      if (authDirective) {
+        const { cognito_groups, allow_api_key, allow_iam } = authDirective;
+
+        const appsyncDirectives = [];
+        if (cognito_groups) appsyncDirectives.push(
+          makeDirectiveNode('aws_cognito_user_pools', { cognito_groups })
+        );
+        if (allow_api_key) appsyncDirectives.push(
+          makeDirectiveNode('aws_api_key')
+        );
+        if (allow_iam) appsyncDirectives.push(
+          makeDirectiveNode('aws_iam')
+        );
+
+        console.log(appsyncDirectives);
+
+        nodeConfig.astNode.directives = [
+          ...nodeConfig.astNode.directives.filter(d => d.name.value !== 'auth'),
+          ...appsyncDirectives
+        ];
+      }
+
+      return nodeConfig;
+    }
+    const appsyncSchema = mapSchema(schemaWithCascadedAuth, {
+      [MapperKind.OBJECT_TYPE](objectTypeConfig) {
+        return appsyncAuthTranslationVisitor(objectTypeConfig);
+      },
+      [MapperKind.OBJECT_FIELD](objectFieldConfig) {
+        return appsyncAuthTranslationVisitor(objectFieldConfig);
+      }
+    });
+
+    return printSchemaWithDirectives(appsyncSchema);
   }
 };
