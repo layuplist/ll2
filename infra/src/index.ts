@@ -6,6 +6,7 @@ import { InfraStack } from './lib/infra-stack';
 import { ClientStack } from './lib/client-stack';
 import { ApiStack } from './lib/api-stack';
 import { AuthStack } from './lib/auth-stack';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 const ACCOUNT = '435094978882';
 const REGION = 'us-east-1';
@@ -32,7 +33,7 @@ const client = new ClientStack(app, 'client-stack', {
 const auth = new AuthStack(app, 'auth-stack', {
   env
 });
-const data = new ApiStack(app, 'api-stack', {
+const api = new ApiStack(app, 'api-stack', {
   env,
   auth: {
     userPool: auth.userPool,
@@ -41,4 +42,4 @@ const data = new ApiStack(app, 'api-stack', {
   tables: infra.tables
 });
 
-export { infra, client, auth, data };
+export { infra, client, auth, api };

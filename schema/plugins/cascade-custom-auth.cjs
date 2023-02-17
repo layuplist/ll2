@@ -5,15 +5,17 @@ const { printSchemaWithDirectives, mapSchema, getDirective, MapperKind, makeDire
 module.exports = {
   plugin(schema) {
     const backpointers = {};
-    const cascadeAuthVisitor = (nodeConfig) => {
-      const name = nodeConfig.astNode.name.value;
+    const cascadeAuthVisitor = (nodeConfig, fieldName, typeName) => {
       const kind = nodeConfig.astNode.kind;
+      const name = kind === 'FieldDefinition'
+        ? `${typeName}.${fieldName}`
+        : nodeConfig.astNode.name.value;
       const authDirective = getDirective(schema, nodeConfig, 'auth')?.[0];
       const parentAuthDirective = backpointers[name]?.authDirective;
 
       if (kind === 'ObjectTypeDefinition') {
         Object.keys(nodeConfig.getFields()).forEach(fieldName => {
-          backpointers[fieldName] = {
+          backpointers[`${name}.${fieldName}`] = {
             parent: name,
             authDirective: authDirective || parentAuthDirective
           };
@@ -35,8 +37,8 @@ module.exports = {
       [MapperKind.OBJECT_TYPE](objectTypeConfig) {
         return cascadeAuthVisitor(objectTypeConfig);
       },
-      [MapperKind.OBJECT_FIELD](objectFieldConfig) {
-        return cascadeAuthVisitor(objectFieldConfig);
+      [MapperKind.OBJECT_FIELD](objectFieldConfig, fieldName, typeName) {
+        return cascadeAuthVisitor(objectFieldConfig, fieldName, typeName);
       }
     });
 

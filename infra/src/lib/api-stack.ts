@@ -1,11 +1,10 @@
-import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Group, IGrantable, User } from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import {
   AuthorizationType,
   FieldLogLevel,
   GraphqlApi,
-  IGraphqlApi,
-  ISchema
+  SchemaFile
 } from '@aws-cdk/aws-appsync-alpha';
 import {
   Expiration,
@@ -20,21 +19,12 @@ import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
-import { schema } from '@layuplist/schema';
-
 import createCourseResolvers from '../utils/resolvers/course-resolvers';
 import createOfferingResolvers from '../utils/resolvers/offering-resolvers';
 import createReviewResolvers from '../utils/resolvers/review-resolvers';
 import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 const DEFAULT_LOG_RETENTION_DURATION = RetentionDays.ONE_MONTH;
-
-const SchemaString = (definition: string): ISchema => ({
-  bind: (api: IGraphqlApi) => ({
-    apiId: api.apiId,
-    definition
-  })
-});
 
 type ApiStackProps = StackProps & {
   auth: {
@@ -51,6 +41,8 @@ type ApiStackProps = StackProps & {
 
 export class ApiStack extends Stack {
   api: GraphqlApi;
+  adminGroup: Group;
+  serviceUser: User;
 
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
@@ -59,16 +51,21 @@ export class ApiStack extends Stack {
 
     this.api = new GraphqlApi(this, 'graphql-api', {
       name: 'graphql-api',
-      schema: SchemaString(schema),
+      schema: new SchemaFile({
+        filePath: '../schema/dist/schema.graphql'
+      }),
       xrayEnabled: true,
       authorizationConfig: {
         defaultAuthorization: {
-          authorizationType: AuthorizationType.USER_POOL,
-          userPoolConfig: {
-            userPool: props.auth.userPool
-          }
+          authorizationType: AuthorizationType.IAM,
         },
         additionalAuthorizationModes: [
+          {
+            authorizationType: AuthorizationType.USER_POOL,
+            userPoolConfig: {
+              userPool: props.auth.userPool
+            }
+          },
           {
             authorizationType: AuthorizationType.API_KEY,
             apiKeyConfig: {
@@ -76,9 +73,6 @@ export class ApiStack extends Stack {
               description: 'temp key for dev use',
               expires: Expiration.after(Duration.days(30))
             }
-          },
-          {
-            authorizationType: AuthorizationType.IAM,
           }
         ]
       },
@@ -112,7 +106,16 @@ export class ApiStack extends Stack {
       'listReviews'
     ]);
 
-    this.api.grant
+    // create iam admin group + service user
+    this.adminGroup = new Group(this, 'admin-iam-group', {
+      groupName: 'admin-iam-group'
+    });
+    this.serviceUser = new User(this, 'admin-service-user', {
+      userName: 'admin-service-user',
+      groups: [this.adminGroup]
+    });
+    this.api.grantQuery(this.adminGroup, '*');
+    this.api.grantMutation(this.adminGroup, '*');
 
     // data sources
 

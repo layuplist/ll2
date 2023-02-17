@@ -4764,6 +4764,7 @@ __metadata:
   resolution: "@layuplist/scripts@workspace:scripts"
   dependencies:
     "@apollo/client": ^3.7.7
+    "@layuplist/schema": "workspace:^"
     cross-fetch: ^3.1.5
     csv-parser: ^3.0.0
     dotenv: ^16.0.3

@@ -1,7 +1,5 @@
 overwrite: true
 schema: 'src/**/*.graphql'
-config:
-  includeDirectives: true
 generates:
   dist/types.ts:
     plugins:

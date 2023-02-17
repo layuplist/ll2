@@ -63,7 +63,7 @@ input CourseFilterInput {
 }
 
 extend type Query {
-  getCourse(id: ID!): Course @auth(cognito_groups: ["student"])
+  getCourse(id: ID!): Course
   getCourses(ids: [ID!]!): [Course]!
   listCourses(filter: CourseFilterInput, sortBy: String): [Course]!
 }
@@ -77,6 +77,7 @@ input CourseGroupInput {
 input AddCourseInput {
   department: String!
   number: Float!
+  url: String
   xlist: CourseGroupInput
   qualityScore: Int = 0
   layupScore: Int = 0
@@ -84,6 +85,7 @@ input AddCourseInput {
 }
 
 input UpdateCourseInput {
+  url: String
   xlist: CourseGroupInput
   qualityScore: Int
   layupScore: Int

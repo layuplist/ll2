@@ -73,7 +73,8 @@ export const addOffering: FieldResolverHandler<MutationAddOfferingArgs, Mutation
       await addCourse({
         course: {
           department: args.offering.department,
-          number: args.offering.number
+          number: args.offering.number,
+          terms: [args.offering.term]
         }
       });
     } else throw err;

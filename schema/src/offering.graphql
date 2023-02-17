@@ -10,6 +10,10 @@ type Offering @auth(
 ) {
   id: ID!
   """
+  Course registration number.
+  """
+  crn: Int!
+  """
   Course department.
   """
   department: String!
@@ -67,6 +71,7 @@ extend type Query {
 # * MUTATIONS
 
 input AddOfferingInput {
+  crn: Int!
   department: String!
   number: Float!
   term: Int!

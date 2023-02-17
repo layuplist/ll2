@@ -38,7 +38,7 @@ type Query @auth(
 # mutations default to requiring admin group, or iam
 type Mutation @auth(
   cognito_groups: ["admin"],
-  allow_api_key: false,
+  allow_api_key: true,
   allow_iam: true
 ) {
   _: Boolean # stub

@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import {
   AccountRecovery,
   UserPool,
@@ -7,16 +7,12 @@ import {
   CfnUserPoolGroup,
   VerificationEmailStyle
 } from 'aws-cdk-lib/aws-cognito';
-import {
-  Role, ServicePrincipal, UnknownPrincipal, User
-} from 'aws-cdk-lib/aws-iam';
 
 type AuthStackProps = StackProps;
 
 export class AuthStack extends Stack {
   userPool: UserPool;
   userPoolClient: UserPoolClient;
-  adminRole: Role;
 
   constructor(scope: Construct, id: string, props: AuthStackProps) {
     super(scope, id, props);
@@ -50,12 +46,12 @@ export class AuthStack extends Stack {
 
     // user groups
 
-    new CfnUserPoolGroup(this, 'admin-group', {
+    new CfnUserPoolGroup(this, 'admin-user-pool-group', {
       userPoolId: this.userPool.userPoolId,
       groupName: 'admin',
       precedence: 0
     });
-    new CfnUserPoolGroup(this, 'student-group', {
+    new CfnUserPoolGroup(this, 'student-user-pool-group', {
       userPoolId: this.userPool.userPoolId,
       groupName: 'student',
       precedence: 5

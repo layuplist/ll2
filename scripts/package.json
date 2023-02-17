@@ -3,6 +3,7 @@
   "packageManager": "yarn@3.4.1",
   "dependencies": {
     "@apollo/client": "^3.7.7",
+    "@layuplist/schema": "workspace:^",
     "cross-fetch": "^3.1.5",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.0.3",

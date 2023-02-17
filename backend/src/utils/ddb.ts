@@ -45,10 +45,13 @@ export const generateDdbExpressionParams = (
     names[`#${key}`] = key;
 
     // add to expression
-    if (typeof comparator === 'string' || comparator instanceof String) {
-      expression.push(`#${key} ${comparator} :${key}`)
+    if (!(typeof comparator === 'string' || comparator instanceof String)) {
+      comparator = comparator(key);
+    }
+    if (comparator.toLowerCase() === 'contains') {
+      expression.push(`contains(#${key}, :${key})`);
     } else {
-      expression.push(`#${key} ${comparator(key)} :${key}`)
+      expression.push(`#${key} ${comparator} :${key}`);
     }
   });
 
