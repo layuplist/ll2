@@ -1,4 +1,4 @@
-import { Group, IGrantable, User } from 'aws-cdk-lib/aws-iam';
+import { Effect, Group, IGrantable, PolicyStatement, User } from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import {
   AuthorizationType,
@@ -231,7 +231,15 @@ export class ApiStack extends Stack {
       cors: {
         allowedOrigins: ['https://github.com']
       }
-    })
+    });
+    spiderSyncLambda.addToRolePolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'ssm:GetParameter',
+        'ssm:PutParameter'
+      ],
+      resources: ['arn:aws:ssm::*:parameter/DATA_ACTIVE_VERSION_*']
+    }));
 
     // outputs
 
