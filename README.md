@@ -9,4 +9,5 @@
 3. (inside package) Install dependencies: `yarn install`
 4. (inside package) Build packages: `yarn build`
 
-_add steps to run locally once infra is ready, probably will be based on rde_
+### Local Invocation
+

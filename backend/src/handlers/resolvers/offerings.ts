@@ -46,7 +46,8 @@ export const addOffering: FieldResolverHandler<MutationAddOfferingArgs, Mutation
     {
       ...args.offering,
       id
-    }
+    },
+    args.overwrite
   );
 
   // update course terms

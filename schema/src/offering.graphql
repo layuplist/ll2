@@ -90,7 +90,7 @@ input UpdateOfferingInput {
 }
 
 extend type Mutation {
-  addOffering(offering: AddOfferingInput!): MutationResponseWithId!
+  addOffering(offering: AddOfferingInput!, overwrite: Boolean): MutationResponseWithId!
   updateOffering(id: ID!, offering: UpdateOfferingInput!): MutationResponse!
   deleteOffering(id: ID!): MutationResponse!
 }

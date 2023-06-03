@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import glob from 'glob';
 import { build } from 'esbuild';
 import { rimraf } from 'rimraf';

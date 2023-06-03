@@ -15,6 +15,7 @@
   "scripts": {
     "lint": "eslint .",
     "build": "yarn workspace @layuplist/schema build && (yarn workspace @layuplist/client build & yarn workspace @layuplist/backend build) && yarn workspace @layuplist/infra build",
+    "synth": "yarn build && yarn workspace @layuplist/infra synth",
     "deploy": "yarn build && yarn workspace @layuplist/infra deploy --all"
   },
   "devDependencies": {
@@ -22,6 +23,9 @@
     "@typescript-eslint/parser": "^5.50.0",
     "eslint": "^8.33.0",
     "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": "18"
   },
   "packageManager": "yarn@3.4.1"
 }

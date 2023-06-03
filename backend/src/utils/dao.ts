@@ -82,17 +82,22 @@ export const listItems = async (
 export const addItem = async (
   tableName: string,
   item: PutCommandInput['Item'],
+  overwrite?: boolean
 ) => {
   const { values, names, expression } =
     generateDdbExpressionParams(item ? { id: item.id } : {}, '<>');
 
   const params: PutCommandInput = {
     TableName: tableName,
-    Item: item,
-    ExpressionAttributeValues: values,
-    ExpressionAttributeNames: names,
-    ConditionExpression: expression!.join(' and ')
+    Item: item
   };
+
+  // unless overwrite is enabled, add a key condition to enforce uniquity
+  if (!overwrite) {
+    params.ExpressionAttributeValues = values;
+    params.ExpressionAttributeNames = names;
+    params.ConditionExpression = expression!.join(' and ');
+  }
 
   try {
     await docClient.send(new PutCommand(params));

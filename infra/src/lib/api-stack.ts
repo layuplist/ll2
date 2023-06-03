@@ -12,19 +12,18 @@ import {
   StackProps,
   Duration,
   CfnOutput,
+  CfnParameter,
 } from 'aws-cdk-lib';
 import { Architecture, Code, Function, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
-import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 import createCourseResolvers from '../utils/resolvers/course-resolvers';
 import createOfferingResolvers from '../utils/resolvers/offering-resolvers';
 import createReviewResolvers from '../utils/resolvers/review-resolvers';
-import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
-
-const DEFAULT_LOG_RETENTION_DURATION = RetentionDays.ONE_MONTH;
+import { DEFAULT_LOG_RETENTION_DURATION } from '../utils/constants';
 
 type ApiStackProps = StackProps & {
   auth: {
@@ -127,8 +126,8 @@ export class ApiStack extends Stack {
       REVIEWS_TABLE: props.tables.reviews.tableName,
       PROFESSORS_TABLE: props.tables.professors.tableName
     };
-    const grantFullAccessToAllTables = (lambda: IGrantable) => {
-      Object.values(props.tables).forEach(table => table.grantFullAccess(lambda));
+    const grantFullAccessToAllTables = (lambda: IGrantable, tables: ITable[]) => {
+      tables.forEach(table => table.grantFullAccess(lambda));
     };
 
     const coursesLambda = new Function(this, 'appsync-courses-resolver', {
@@ -141,7 +140,7 @@ export class ApiStack extends Stack {
       environment: lambdaResolverEnvironment,
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
-    grantFullAccessToAllTables(coursesLambda);
+    grantFullAccessToAllTables(coursesLambda, Object.values(props.tables));
     const coursesDataSource = this.api.addLambdaDataSource(
       // appsync requires this to be in UpperCamel, so it is intentionally 
       // inconsistent with the rest of our resource naming
@@ -159,7 +158,7 @@ export class ApiStack extends Stack {
       environment: lambdaResolverEnvironment,
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
-    grantFullAccessToAllTables(offeringsLambda);
+    grantFullAccessToAllTables(offeringsLambda, Object.values(props.tables));
     const offeringsDataSource = this.api.addLambdaDataSource(
       'OfferingsDataSource',
       offeringsLambda
@@ -175,7 +174,7 @@ export class ApiStack extends Stack {
       environment: lambdaResolverEnvironment,
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
-    grantFullAccessToAllTables(reviewsLambda);
+    grantFullAccessToAllTables(reviewsLambda, Object.values(props.tables));
     const reviewsDataSource = this.api.addLambdaDataSource(
       'ReviewsDataSource',
       reviewsLambda
@@ -205,6 +204,28 @@ export class ApiStack extends Stack {
     reviewStreamLambda.addEventSource(new DynamoEventSource(props.tables.reviews, {
       startingPosition: StartingPosition.LATEST
     }));
+
+    // sync spider updates
+
+    // this is passed as a parameter to allow for local dev overrides
+    const spiderSyncLambdaTimeoutParameter = new CfnParameter(this, 'spider-sync-handler-timeout-parameter', {
+      type: 'Number',
+      default: 900
+    });
+    const spiderSyncLambda = new Function(this, 'spider-sync-handler', {
+      functionName: 'spider-sync-handler',
+      runtime: Runtime.NODEJS_18_X,
+      handler: 'index.default',
+      code: Code.fromAsset('../backend/dist/handlers/spider/sync'),
+      memorySize: 1536,
+      timeout: Duration.seconds(spiderSyncLambdaTimeoutParameter.valueAsNumber),
+      architecture: Architecture.ARM_64,
+      environment: {
+        GRAPHQL_ENDPOINT: this.api.graphqlUrl
+      },
+      logRetention: DEFAULT_LOG_RETENTION_DURATION
+    });
+    this.api.grantMutation(spiderSyncLambda, 'addOffering');
 
     // outputs
 

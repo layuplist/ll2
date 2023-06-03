@@ -6,7 +6,7 @@ import { InfraStack } from './lib/infra-stack';
 import { ClientStack } from './lib/client-stack';
 import { ApiStack } from './lib/api-stack';
 import { AuthStack } from './lib/auth-stack';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { SpiderStack } from './lib/spider-stack';
 
 const ACCOUNT = '435094978882';
 const REGION = 'us-east-1';
@@ -41,5 +41,10 @@ const api = new ApiStack(app, 'api-stack', {
   },
   tables: infra.tables
 });
+
+const spider = new SpiderStack(app, 'spider-stack', {
+  api: api.api
+});
+await spider.initialize();
 
 export { infra, client, auth, api };
