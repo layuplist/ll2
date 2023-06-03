@@ -11,8 +11,7 @@ import type { ORCCourse, TimetableOffering, Version, Versions } from 'utils/type
 import { getCurrentVersion, setCurrentVersion } from "utils/ssm";
 import { Source } from 'utils/types';
 
-// const { GRAPHQL_ENDPOINT } = process.env;
-const GRAPHQL_ENDPOINT = 'https://cac4dlebpjf7dbhnceuncy53ia.appsync-api.us-east-1.amazonaws.com/graphql';
+const { GRAPHQL_ENDPOINT } = process.env;
 
 const DATA_REPOSITORY_URL = 'https://github.com/D-Planner/data.git';
 const LOCAL_DIR = '/tmp/data';

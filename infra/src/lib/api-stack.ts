@@ -14,7 +14,7 @@ import {
   CfnOutput,
   CfnParameter,
 } from 'aws-cdk-lib';
-import { Architecture, Code, Function, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, Code, Function, FunctionUrlAuthType, Runtime, StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
@@ -226,6 +226,12 @@ export class ApiStack extends Stack {
       logRetention: DEFAULT_LOG_RETENTION_DURATION
     });
     this.api.grantMutation(spiderSyncLambda, 'addOffering');
+    spiderSyncLambda.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['https://github.com']
+      }
+    })
 
     // outputs
 
