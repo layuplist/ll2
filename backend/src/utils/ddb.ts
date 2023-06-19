@@ -34,13 +34,7 @@ export const generateDdbExpressionParams = (
   Object.entries(args).forEach(([key, value]) => {
     if (value == null) return;
 
-    // set value
-    if (Array.isArray(value)) {
-      values[`:${key}`] = `(${value.join(', ')})`;
-    } else {
-      values[`:${key}`] = value;
-    }
-
+    values[`:${key}`] = value;
     // avoid reserved keywords
     names[`#${key}`] = key;
 

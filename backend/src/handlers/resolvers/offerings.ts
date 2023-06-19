@@ -60,6 +60,7 @@ export const addOffering: FieldResolverHandler<MutationAddOfferingArgs, Mutation
   try {
     // if course exists and does not include new offering term, update
     const course = await getCourse(courseKey);
+    console.info('here!', course.terms, args.offering.term);
     if (!course.terms.includes(args.offering.term)) {
       await updateCourse({
         ...courseKey,

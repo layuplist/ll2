@@ -8,17 +8,21 @@ directive @auth(
 
 # * TYPES
 
-interface MutationResponse {
-  success: Boolean!
-}
-
-type MutationResponseWithId implements MutationResponse @auth(
+type MutationResponse @auth (
   cognito_groups: ["student"],
   allow_api_key: true,
   allow_iam: true
 ) {
-  id: ID!
   success: Boolean!
+}
+
+type MutationResponseWithId @auth(
+  cognito_groups: ["student"],
+  allow_api_key: true,
+  allow_iam: true
+) {
+  success: Boolean!
+  id: ID!
 }
 
 # * QUERIES

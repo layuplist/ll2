@@ -43,6 +43,7 @@ export class SpiderStack extends Stack {
         CHANGES_ENROLLMENT_APPROVAL_THRESHOLD: '0.50',
         REMOVED_DEFAULT_APPROVAL_THRESHOLD: '0.50',
         ADDED_DEFAULT_APPROVAL_THRESHOLD: '0.75',
+        GH_USERNAME: process.env.GH_USERNAME!,
         GH_TOKEN: process.env.GH_TOKEN!
       },
       logRetention: DEFAULT_LOG_RETENTION_DURATION

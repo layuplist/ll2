@@ -8,6 +8,8 @@ import { ApiStack } from './lib/api-stack';
 import { AuthStack } from './lib/auth-stack';
 import { SpiderStack } from './lib/spider-stack';
 
+// this is the production AWS account, please change this
+// string if deploying your own infrastructure.
 const ACCOUNT = '435094978882';
 const REGION = 'us-east-1';
 

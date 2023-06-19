@@ -238,7 +238,9 @@ export class ApiStack extends Stack {
         'ssm:GetParameter',
         'ssm:PutParameter'
       ],
-      resources: ['arn:aws:ssm::*:parameter/DATA_ACTIVE_VERSION_*']
+      resources: [
+        '*'
+      ]
     }));
 
     // outputs
